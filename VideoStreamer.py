@@ -8,10 +8,8 @@ import socketserver
 from threading import Condition
 from http import server
 from Sensors import PiSensor
-from Displays import Displays
 from Utilities import JsonHandler
 
-unit_display = Displays()
 piSensor= PiSensor()
 jsonreader = JsonHandler()
 
@@ -147,7 +145,6 @@ class CameraStream:
         self.stream_encoder = self.setup_encoder()
 
         try:
-            unit_display.show_streaming_info(self.ip_address, self.port)
             self.stream_camera.start_recording(self.stream_encoder, output)
             self.server.serve_forever()
 
@@ -164,7 +161,6 @@ class CameraStream:
         self.stream_camera.stop()
         self.stream_camera.close()
         self.set_streaming_status(False)
-        unit_display.show_streaming_info(None, None)
 
         return None
 

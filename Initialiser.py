@@ -144,8 +144,7 @@ class SensorDataLogger(DirectoryInfo):
         
     def create_csv_file(self, _csv_file_name):
         with open(_csv_file_name, 'w', newline='') as csvfile:
-            fieldnames = ['Date', 'Time', 'Temperature', 'Humidity', 'Pressure' ,'CPU Temperature', 'Free Space', 'Total Space', 
-                          'X_acc', 'Y_acc', 'Z_acc', 'X_tilt', 'Y_tilt', 'Z_tilt', 'Compass', 'Location']
+            fieldnames = ['Date', 'Time' ,'CPU Temperature', 'Free Space', 'Total Space']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
         

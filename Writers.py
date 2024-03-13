@@ -45,8 +45,7 @@ class CSVWriter():
     
     def create_csv_file(self, _csv_file_name):
         with open(_csv_file_name, 'w', newline='') as csvfile:
-            fieldnames = ['Date', 'Time', 'Temperature', 'Humidity', 'Pressure' ,'CPU Temperature', 'Free Space', 'Total Space', 
-                          'Compass']
+            fieldnames = ['Date', 'Time','CPU Temperature', 'Free Space', 'Total Space']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
         
@@ -78,13 +77,9 @@ class CSVWriter():
             writer = csv.writer(csvfile, delimiter=',')
             writer.writerow([date_now_str, 
                              time_now_str,
-                              sensor_data['temperature'],
-                              sensor_data['humidity'],
-                              sensor_data['pressure'],
                               sensor_data['cpu_temp'],
                               sensor_data['free_space'],
-                              sensor_data['total_space'],
-                              sensor_data['compass']])
+                              sensor_data['total_space']])
             csvfile.close()
             logger.info("Data logged to file: " + self.csv_file_path)
 

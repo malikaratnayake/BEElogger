@@ -5,7 +5,6 @@ import time
 from threading import Thread, Event
 import argparse
 from Sensors import Sensors
-from Displays import Displays
 from RaspberryPi import  FileTransfer, UnitManager
 # from Transceiver import Transmitter, Reciever
 from Writers import Writers
@@ -22,20 +21,21 @@ class CameraThread(Thread):
     def __init__(
             self, 
             camera: Camera,
-            sensors: Sensors,
-            unitmanager: UnitManager,
             streamer: CameraStream,
+            unitmanager: UnitManager,
             name: str,
             stop_signal: Event,
+            video_file_queue: Queue,
             ) -> None:
         
         super().__init__(name=name)
         self.camera = camera
-        self.sensors = sensors 
         self.stop_signal = stop_signal
         self.unitmanager = unitmanager
         self.streamer = streamer
         self.video_end_time = None
+        self.camera.set_recording_status(True)
+        self.video_file_queue = video_file_queue
         
 
     def run(self):
@@ -45,17 +45,16 @@ class CameraThread(Thread):
                 break
 
             if self.camera.get_recording_status() is True:
-                self.camera.record_video()
+                recorded_video_file = self.camera.record_video()
+                if recorded_video_file is not None:
+                    self.video_file_queue.put(recorded_video_file)
                 self.video_end_time = time.time()
-                # print("Recording")
-                # self.streamer.start_streaming()
 
             elif self.streamer.get_streaming_status() is True:
                 self.camera.set_recording_status(False)
                 self.streamer.start_streaming()
               
-
-            elif self.unitmanager.get_menu_mode() is False and self.unitmanager.get_unit_operational_status() is True:
+            elif self.unitmanager.get_unit_operational_status() is True:
                 if self.camera.get_recording_status() is False:
                     recording_status = self.camera.schedule_video_recording(self.video_end_time, self.camera.get_recording_status())
                     self.camera.set_recording_status(recording_status)
@@ -72,60 +71,60 @@ class CameraThread(Thread):
 
 
 
-class SensorLoggingThread(Thread):
-    def __init__(
-        self, 
-        sensors: Sensors,
-        camera: Camera,
-        data_logger,
-        unit_display,
-        unitmanager,
-        name: str,
-        stop_signal: Event,
-        streamer: CameraStream,
-        ) -> None:
+# class SensorLoggingThread(Thread):
+#     def __init__(
+#         self, 
+#         sensors: Sensors,
+#         camera: Camera,
+#         data_logger,
+#         unit_display,
+#         unitmanager,
+#         name: str,
+#         stop_signal: Event,
+#         streamer: CameraStream,
+#         ) -> None:
         
-        super().__init__(name=name)
-        self.camera = camera
-        self.sensors = sensors
-        self.data_logger = data_logger
-        self.unit_display = unit_display
-        self.unitmanager = unitmanager
-        self.stop_signal = stop_signal
-        self.streamer = streamer
+#         super().__init__(name=name)
+#         self.camera = camera
+#         self.sensors = sensors
+#         self.data_logger = data_logger
+#         self.unit_display = unit_display
+#         self.unitmanager = unitmanager
+#         self.stop_signal = stop_signal
+#         self.streamer = streamer
 
 
 
-    def run(self):
-        while True:
-            if self.stop_signal.is_set():
-                LOGGER.info(f"Stopping {self.name}. Stop signal received")
-                break
+#     def run(self):
+#         while True:
+#             if self.stop_signal.is_set():
+#                 LOGGER.info(f"Stopping {self.name}. Stop signal received")
+#                 break
 
                         
 
-            if self.camera.get_recording_status() is True: # Add testing status true
-                current_time = round(time.time()) 
-                if self.sensors.time_to_record(current_time):        
-                    self.unit_display.data_logging_led(True)
-                    sensor_data = self.sensors.read_sensors()
-                    self.data_logger.log_sensor_data(current_time,
-                                                     sensor_data=sensor_data)
-                    self.unit_display.data_logging_led(False)
-                else:
-                    pass
-            else:
-                self.sensors.reset_recording_times() 
+#             if self.camera.get_recording_status() is True: # Add testing status true
+#                 current_time = round(time.time()) 
+#                 if self.sensors.time_to_record(current_time):        
+#                     self.unit_display.data_logging_led(True)
+#                     sensor_data = self.sensors.read_sensors()
+#                     self.data_logger.log_sensor_data(current_time,
+#                                                      sensor_data=sensor_data)
+#                     self.unit_display.data_logging_led(False)
+#                 else:
+#                     pass
+#             else:
+#                 self.sensors.reset_recording_times() 
 
 class UnitManagerThread(Thread):
     def __init__(
         self, 
         unitmanager: UnitManager,
         camera: Camera,
-        streaming: CameraStream,
         stop_signal: Event,
         filetransfer: FileTransfer,
-        start_time: float,
+        data_logger: Writers,
+        video_file_queue: Queue,
         name: str,
         ) -> None:
         
@@ -133,8 +132,9 @@ class UnitManagerThread(Thread):
         self.unitmanager = unitmanager
         self.stop_signal = stop_signal
         self.camera = camera
-        self.streaming = streaming
         self.filetransfer = filetransfer
+        self.data_logger = data_logger
+        self.video_file_queue = video_file_queue
 
     def run(self):
         while True:
@@ -142,27 +142,36 @@ class UnitManagerThread(Thread):
                 LOGGER.info(f"Stopping {self.name}. Stop signal received")
                 break
 
+            if not self.video_file_queue.empty():
+                time.sleep(10)
+                video_file = self.video_file_queue.get()
+                output_video = self.camera.convert_to_mp4(video_file)
+                self.filetransfer.transfer_data(output_video)
+                self.video_file_queue.task_done()
+
+            # If there is one in the que, convert it and transfer to the main station
+
             
-            if self.unitmanager.get_menu_mode() is True:
-                if self.streaming.get_streaming_status() is True:
-                    self.streaming.set_streaming_status(False)
-                    time.sleep(1)
-                    self.streaming.stop_streaming()
+            # if self.unitmanager.get_menu_mode() is True:
+            #     if self.streaming.get_streaming_status() is True:
+            #         self.streaming.set_streaming_status(False)
+            #         time.sleep(1)
+            #         self.streaming.stop_streaming()
 
                 
-                while self.camera.get_recording_status() is True:
-                    time.sleep(1)
+            #     while self.camera.get_recording_status() is True:
+            #         time.sleep(1)
                     
-                self.camera.set_recording_status(False)
-                selected_option = self.unitmanager.select_option()
-                stay_in_menu = self.unitmanager.execute_option(selected_option, self.camera, self.streaming, self.filetransfer, self.stop_signal)
-                self.unitmanager.set_menu_mode(self.unitmanager.exit_menu(stay_in_menu))
+            #     self.camera.set_recording_status(False)
+            #     selected_option = self.unitmanager.select_option()
+            #     stay_in_menu = self.unitmanager.execute_option(selected_option, self.camera, self.streaming, self.filetransfer, self.stop_signal)
+            #     self.unitmanager.set_menu_mode(self.unitmanager.exit_menu(stay_in_menu))
 
-            else:
-                menu_mode = self.unitmanager.enter_menu()
-                self.unitmanager.set_menu_mode(menu_mode)
+            # else:
+            #     menu_mode = self.unitmanager.enter_menu()
+            #     self.unitmanager.set_menu_mode(menu_mode)
 
-                self.unitmanager.run_diagnostics(self.camera, self.stop_signal)
+            self.unitmanager.run_diagnostics(self.camera, self.stop_signal, self.data_logger)
           
             # time.sleep(0.002)             
 
@@ -176,13 +185,12 @@ def main():
     filetransfer = FileTransfer()
     camera = Camera.VideoRecorder()
     sensors = Sensors()
-    unit_display = Displays()
     unitmanager = UnitManager()
-    data_logger = Writers()
     streamer = CameraStream()
+    data_logger = Writers()
 
     stop_signal = Event()
-    transmit_queue = Queue(maxsize=10)
+    video_file_queue = Queue(maxsize=10)
     
 
     # Parse command line arguments
@@ -199,31 +207,31 @@ def main():
     threads = (
         camera_recoding := CameraThread(
             camera = camera,
-            sensors = sensors,
-            stop_signal = stop_signal,
             unitmanager = unitmanager,
+            stop_signal = stop_signal,
             streamer = streamer,
+            video_file_queue = video_file_queue,
             name = "CameraThread",
             ),
         unit_manager := UnitManagerThread( 
             unitmanager = unitmanager,
             stop_signal = stop_signal,
             camera = camera,
-            streaming = streamer,
             filetransfer = filetransfer,
-            start_time = startup_time,
+            data_logger = data_logger,
+            video_file_queue = video_file_queue,
             name = "UnitManagerThread",
             ),
-        sensor_logging := SensorLoggingThread(
-            sensors = sensors, 
-            camera = camera,
-            data_logger = data_logger, 
-            unit_display = unit_display, 
-            unitmanager = unitmanager,
-            stop_signal = stop_signal,
-            streamer = streamer,
-            name = "SensorLoggingThread",
-            ),
+        # sensor_logging := SensorLoggingThread(
+        #     sensors = sensors, 
+        #     camera = camera,
+        #     data_logger = data_logger, 
+        #     unit_display = unit_display, 
+        #     unitmanager = unitmanager,
+        #     stop_signal = stop_signal,
+        #     streamer = streamer,
+        #     name = "SensorLoggingThread",
+        #     ),
     )
 
 

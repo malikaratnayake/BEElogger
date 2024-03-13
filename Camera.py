@@ -8,13 +8,11 @@ import os
 import logging
 from Utilities import JsonReader
 from Initialiser import DirectoryInfo, SetupVideoFileList
-from Displays import Displays
 
 logger = logging.getLogger()
 jsonreader = JsonReader()
 directory_info = DirectoryInfo()
 video_file_logger = SetupVideoFileList()
-unit_display = Displays()
 
 class VideoRecorder:
 
@@ -107,9 +105,7 @@ class VideoRecorder:
         video_file_logger.add_video_to_list(video_file_list, video_filename)
         logger.info('Started Video recording: ' + video_filename)
         # unit_display.video_recording_led(recording = True)
-        print("hsdfhkkhdsfkkj")
-        unit_display.show_video_recording(video_duration = duration, end_time= self.record_end_time, recording = True)
-        print("here")
+
         os.system("libcamera-vid -v 0 -n -t {} --framerate {} --width {} --height {} --codec {} -o {}".format(duration, 
                                                                                                            self.video_fps, 
                                                                                                            self.video_resolution[0], 
@@ -117,12 +113,11 @@ class VideoRecorder:
                                                                                                            self.video_codec, 
                                                                                                            video_filename))
         logger.info('Video saved to ' + video_filename)
-        unit_display.show_video_recording(recording = False)
         time.sleep(2)
         self.recording_status = False
 
 
-        return None
+        return video_filename
     
 
 
@@ -134,6 +129,23 @@ class VideoRecorder:
                 return True
             else:
                 return False
+
+    
+    def convert_to_mp4(self, video_filename):
+        # Extract the video filename before extension
+        input_video_filename = video_filename.split('.')[0]
+
+        #add mp4 as extnsion for the output video filename
+        output_video_filename = input_video_filename + '.mp4'
+
+        os.system("ffmpeg -framerate {} -i {} -c copy {}".format(self.video_fps, video_filename, output_video_filename))
+
+        return output_video_filename
+                                                                                                          
+
+
+
+        
 
 
         
