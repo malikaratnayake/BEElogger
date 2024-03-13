@@ -1,0 +1,45 @@
+{
+    "brightness": 50,
+    "max_operating_temp": 80,
+    "min_storage": 5,
+    "min_battery": 20,
+    "total_space": 62579834880,
+    "cam_number": 53,
+    "max_cam_number": 9,
+    "data_log_interval": 30,
+    "menu_hold_delay": 3,
+    "startup_record_delay": 30,
+    "video_resolution": [
+        1920,
+        1080
+    ],
+    "video_duration": 300,
+    "test_video_duration": 60,
+    "video_fps": 30.0,
+    "video_bitrate": 17000000,
+    "video_codec": "libav",
+    "video_container": "mp4",
+    "video_quality": "HIGH",
+    "video_format": "RGB888",
+    "video_sampling_interval": 0,
+    "diagnostic_interval": 120,
+    "output_directory": "/home/pi-cam53/",
+    "movement_threshold": 0.6,
+    "calibration_time": 5,
+    "unit_turnon_time": "10:15:00",
+    "unit_turnoff_time": "16:00:00",
+    "turnoff_delay": 60,
+    "destination_dir": "/home/pi-server/Data_Recieved/",
+    "destination": "pi-server@10.42.0.1",
+    "daily_logging_dir": "/home/pi-cam3/Monitoring_Data",
+    "min_light_gain": 220,
+    "daily_logging_folder": "/home/pi-cam53/Monitoring_Data/Camera_3_20230925",
+    "transmission_group": 1,
+    "this_radio_address": 1,
+    "reciever_address": 0,
+    "stopping_stations": [1,2,3,4,5],
+    "min_travel_time": 5
+
+
+
+}
