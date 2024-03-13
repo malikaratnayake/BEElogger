@@ -189,6 +189,19 @@ class FileTransfer:
 
         return None
 
+    def delete_a_file(self, file_name):
+        """Deletes a file from the source directory when a file name is provided.
+
+        Args:
+            file_name: The name of the file to delete.
+        """
+
+        if os.path.isfile(file_name):
+            os.remove(file_name)
+            logger.info("File deleted from source directory: " + file_name)
+        else:
+            raise FileNotFoundError(f"File not found: {file_name}")
+
 
 
     def transfer_data(self, video_file_name ,test_run=False):

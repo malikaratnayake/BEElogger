@@ -156,11 +156,13 @@ class CameraStream:
 
     def stop_streaming(self):
         
-        self.server.shutdown()
+        self.set_streaming_status(False)
         self.stream_camera.stop_recording()
         self.stream_camera.stop()
         self.stream_camera.close()
-        self.set_streaming_status(False)
+        
+        self.server.shutdown()
+        
 
         return None
 

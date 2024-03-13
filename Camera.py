@@ -141,6 +141,14 @@ class VideoRecorder:
         os.system("ffmpeg -framerate {} -i {} -c copy {}".format(self.video_fps, video_filename, output_video_filename))
 
         return output_video_filename
+    
+
+    def process_camera_mode(self, camara_mode, camera, streamer):
+        if camara_mode == 'stream':
+            camera.set_recording_status(False)
+            streamer.set_streaming_status(True)
+        else:
+            camera.set_recording_status(True)
                                                                                                           
 
 

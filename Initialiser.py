@@ -19,7 +19,10 @@ class SetupDirectories:
     video_folder = None
     filename_prefix = None
 
-    def __init__(self):
+    def __init__(self, camera_number=None):
+        if camera_number is not None:
+            jasonreader.update_json_value('cam_number', camera_number)            
+
         self.output_directory = self.output_directory()
         self.monitoring_data_dir = self.create_monitoring_data_folder()
         self.filename_prefix = self.create_filename_prefix()
@@ -28,8 +31,12 @@ class SetupDirectories:
 
     #Read the output_directory to save the files in from the json file
     def output_directory(self):
-        output_directory = jasonreader.read_json_parameter('output_directory')
+        pwd = os.getcwd() + '/'
+        output_directory = '/'.join(pwd.split('/')[:-2]) + '/'
+        jasonreader.update_json_value('output_directory', output_directory) 
         return output_directory
+
+        
 
     # Create Monitoring_Data Folder in the current directory, if it does not exist
     def create_monitoring_data_folder(self):
@@ -323,8 +330,8 @@ class SetupVideoFileList(DirectoryInfo):
 
 
 class SetupMonitoring(SetupDirectories):
-    def __init__(self):
-        SetupDirectories.__init__(self)
+    def __init__(self, camera_number):
+        SetupDirectories.__init__(self, camera_number)
         SetupEventLogger(self.daily_logging_dir, self.filename_prefix)
         logging.info('Monitoring initialized at directory ' + self.daily_logging_dir)
 

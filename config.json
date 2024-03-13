@@ -13,7 +13,7 @@
         1920,
         1080
     ],
-    "video_duration":30,
+    "video_duration": 30,
     "test_video_duration": 60,
     "video_fps": 30.0,
     "video_bitrate": 17000000,
@@ -21,7 +21,7 @@
     "video_container": "h264",
     "video_quality": "HIGH",
     "video_format": "RGB888",
-    "video_sampling_interval": 0,
+    "video_sampling_interval": 10,
     "diagnostic_interval": 15,
     "output_directory": "/home/pi-cam41/",
     "movement_threshold": 0.6,
@@ -30,16 +30,5 @@
     "unit_turnoff_time": "23:59:00",
     "turnoff_delay": 60,
     "destination_dir": "/home/pi-server/Data_Recieved/",
-    "destination": "pi-server@10.42.0.1",
-    "daily_logging_dir": "/home/pi-cam41/Monitoring_Data",
-    "min_light_gain": 220,
-    "daily_logging_folder": "/home/pi-cam41/Monitoring_Data/Camera_3_20230925",
-    "transmission_group": 1,
-    "this_radio_address": 1,
-    "reciever_address": 0,
-    "stopping_stations": [1,2,3,4,5],
-    "min_travel_time": 5
-
-
-
+    "destination": "pi-server@10.42.0.1"
 }
