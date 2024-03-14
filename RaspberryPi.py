@@ -355,7 +355,7 @@ class SystemTasks():
         _unit_status = self.get_unit_status()
 
         if _unit_status["cpu_temp"] > self.max_operating_temp:
-            logger.warning("Battery temperature is high: " + str(_unit_status["battery_temperature"]))
+            logger.warning("Battery temperature is high: " + str(_unit_status["cpu_temp"]))
             return False
      
         elif self.assess_shutdown_requirement() is True:
