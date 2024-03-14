@@ -45,8 +45,9 @@ class CameraThread(Thread):
                 LOGGER.info(f"Stopping {self.name}. Stop signal received")
                 break
 
+            self.unitmanager.run_diagnostics(self.camera, self.stop_signal, self.data_logger)
+
             if self.camera.get_recording_status() is True:
-                self.unitmanager.run_diagnostics(self.camera, self.stop_signal, self.data_logger)
                 recorded_video_file = self.camera.record_video()
                 if recorded_video_file is not None:
                     self.video_file_queue.put(recorded_video_file)
