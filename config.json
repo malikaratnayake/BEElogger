@@ -13,7 +13,7 @@
         1920,
         1080
     ],
-    "video_duration": 30,
+    "video_duration": 600,
     "test_video_duration": 60,
     "video_fps": 30.0,
     "video_bitrate": 17000000,
@@ -21,7 +21,7 @@
     "video_container": "h264",
     "video_quality": "HIGH",
     "video_format": "RGB888",
-    "video_sampling_interval": 10,
+    "video_sampling_interval": 0,
     "diagnostic_interval": 15,
     "output_directory": "/home/pi-cam41/",
     "movement_threshold": 0.6,
