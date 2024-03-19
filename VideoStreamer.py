@@ -1,6 +1,7 @@
-from picamera2.encoders import MJPEGEncoder
+from picamera2.encoders import H264Encoder, MJPEGEncoder, JpegEncoder
 from picamera2 import Picamera2
 from picamera2.outputs import FileOutput, FfmpegOutput, Output
+from libcamera import Transform
 import time
 import io
 import logging
@@ -127,13 +128,13 @@ class CameraStream:
     def setup_camera(self):
 
         _camera = Picamera2()
-        video_config = _camera.create_video_configuration(main={"size": cam_res})
+        video_config = _camera.create_video_configuration(main={"size": cam_res}, transform=Transform(vflip=True))
         _camera.configure(video_config)
 
         return _camera
     
     def setup_encoder(self):
-        _encoder = MJPEGEncoder(bitrate=10000000)
+        _encoder = JpegEncoder()
 
         return _encoder
 
