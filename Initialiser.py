@@ -23,14 +23,14 @@ class SetupDirectories:
         if camera_number is not None:
             jasonreader.update_json_value('cam_number', camera_number)            
 
-        self.output_directory = self.output_directory()
+        self.output_directory = self.create_output_directory()
         self.monitoring_data_dir = self.create_monitoring_data_folder()
         self.filename_prefix = self.create_filename_prefix()
         self.daily_logging_dir = self.create_daily_logging_folder()
         self.video_folder = self.create_camera_output_folder()
 
     #Read the output_directory to save the files in from the json file
-    def output_directory(self):
+    def create_output_directory(self):
         pwd = os.getcwd() + '/'
         output_directory = '/'.join(pwd.split('/')[:-2]) + '/'
         jasonreader.update_json_value('output_directory', output_directory) 
