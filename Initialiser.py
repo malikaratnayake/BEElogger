@@ -31,8 +31,8 @@ class SetupDirectories:
 
     #Read the output_directory to save the files in from the json file
     def create_output_directory(self):
-        pwd = os.getcwd() + '/'
-        output_directory = '/'.join(pwd.split('/')[:-2]) + '/'
+        pwd = os.path.dirname(os.path.abspath(__file__))
+        output_directory = os.path.join(pwd, '')
         jasonreader.update_json_value('output_directory', output_directory) 
         return output_directory
 
