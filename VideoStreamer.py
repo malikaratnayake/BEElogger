@@ -128,7 +128,7 @@ class CameraStream:
     def setup_camera(self):
 
         _camera = Picamera2()
-        video_config = _camera.create_video_configuration(main={"size": cam_res}, transform=Transform(vflip=True))
+        video_config = _camera.create_video_configuration(main={"size": cam_res}, transform=Transform(vflip=True, hflip =True))
         _camera.configure(video_config)
 
         return _camera

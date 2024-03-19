@@ -1,1 +1,0 @@
-/home/pi-cam42/PollinationMonitoringUnit/Monitoring_Data/Camera_42_20240319/Video_recordings/Camera_42_20240319_130413.h264
