@@ -210,30 +210,29 @@ class FileTransfer:
 
 
 
-    def transfer_data(self, video_file_name ,test_run=False):
+    def transfer_data(self ,test_run=False):
 
-        try:
 
-            # Create folders at destination for the data transfer
-            destination_subdir, video_subdir = self.create_destination_folder()
+        # Create folders at destination for the data transfer
+        destination_subdir, video_subdir = self.create_destination_folder()
 
-            #Transfer video files
-            # hat_display.show_letter("V")
-            self.transfer_a_video(video_subdir, video_file_name ,test_run=test_run)
+        #Transfer video files
+        # hat_display.show_letter("V")
+        self.transfer_video_files(video_subdir ,test_run=test_run)
 
-            # Check transfer status and delete transffered files from source directory
-            # hat_display.show_letter("C")
-            self.check_transfer_status(video_subdir, delete_original=False)
+        # Check transfer status and delete transffered files from source directory
+        # hat_display.show_letter("C")
+        self.check_transfer_status(video_subdir, delete_original=False)
 
-            #Transfer log files
-            # hat_display.show_letter("L")
-            self.transfer_logs(destination_subdir)
+        #Transfer log files
+        # hat_display.show_letter("L")
+        self.transfer_logs(destination_subdir)
 
-            logger.info("Data transfer completed successfully")
+        logger.info("Data transfer completed successfully")
 
-        except:
-            logger.error("Data transfer process failed")
-            return None
+        return None
+
+
 
 
 

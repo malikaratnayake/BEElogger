@@ -206,8 +206,10 @@ def main():
         thread.join()
 
     # Transfer recorded files to the server
-    # filetransfer.transfer_data()
-    # LOGGER.info("Data transfer complete")
+    try:
+        filetransfer.transfer_data()
+    except:
+        LOGGER.info("Error transferring data to the server")
 
     #  # Add any extra stats/metadata to output too
     end = time.time()
