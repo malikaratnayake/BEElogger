@@ -27,7 +27,7 @@
     "movement_threshold": 0.6,
     "calibration_time": 5,
     "unit_turnon_time": "10:15:00",
-    "unit_turnoff_time": "20:00:00",
+    "unit_turnoff_time": "15:30:00",
     "turnoff_delay": 60,
     "destination_dir": "/home/pi-server/Data_Recieved/",
     "destination": "pi-server@10.42.0.1"

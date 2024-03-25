@@ -110,6 +110,7 @@ class UnitManagerThread(Thread):
             if self.streamer.get_streaming_status() is True:
                 time.sleep(self.streaming_duration)
                 self.streamer.stop_streaming()
+                self.streamer.set_streaming_status(False)
                 time.sleep(2)
                 self.camera.set_recording_status(True)
 
@@ -212,7 +213,7 @@ def main():
 
     # Shut down the Raspberry Pi
     LOGGER.info("Shutting down the Raspberry Pi")
-    # unitmanager.schedule_unit_turnoff()
+    unitmanager.schedule_unit_turnoff()
 
 
 if __name__ == "__main__":

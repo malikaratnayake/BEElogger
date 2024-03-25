@@ -380,8 +380,8 @@ class SystemTasks():
 
         
     def schedule_unit_turnoff(self):
-        turn_off_duration = self.calculate_unit_off_duration(self.unit_turnon_time)
-        logger.info("Scheduling unit turnoff for: " + str(turn_off_duration) + " seconds")
+       # turn_off_duration = self.calculate_unit_off_duration(self.unit_turnon_time)
+        #logger.info("Scheduling unit turnoff for: " + str(turn_off_duration) + " seconds")
         # pijuice.power.SetPowerOff(30)
         time.sleep(2)
         os.system("sudo shutdown now")
