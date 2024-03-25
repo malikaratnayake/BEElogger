@@ -108,6 +108,8 @@ class UnitManagerThread(Thread):
 
 
             if self.streamer.get_streaming_status() is True:
+                if self.streaming_duration is None:
+                    self.streaming_duration = self.streamer.get_streaming_duration()
                 time.sleep(self.streaming_duration)
                 self.streamer.stop_streaming()
                 self.streamer.set_streaming_status(False)
@@ -126,7 +128,7 @@ def main():
                     help="Please set the camera mode", type=str, choices=['record', 'stream'])
     ap.add_argument("--camera_number", nargs='?', dest='camera_number', default=None,
                 help="Please set the camera number", type=int)
-    ap.add_argument("--duration", nargs='?', dest='stream_duration', default=30,
+    ap.add_argument("--duration", nargs='?', dest='stream_duration', default=None,
                 help="Please set the duration to stream video", type=int)
     args = ap.parse_args()
     camera_mode = args.camera_mode

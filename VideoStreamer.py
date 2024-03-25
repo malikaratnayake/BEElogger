@@ -10,6 +10,7 @@ from threading import Condition
 from http import server
 from Sensors import PiSensor
 from Utilities import JsonHandler
+import json
 
 piSensor= PiSensor()
 jsonreader = JsonHandler()
@@ -166,6 +167,11 @@ class CameraStream:
         
 
         return None
+    
+    def get_streaming_duration():
+        streaming_duration = jsonreader.read_json_parameter('startup_record_delay')
+
+        return streaming_duration
 
 
 

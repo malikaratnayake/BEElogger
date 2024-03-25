@@ -29,25 +29,31 @@ class FileTransfer:
         self.destination = jsonreader.read_json_parameter('destination')
     
     def create_destination_folder(self):
-        # Get the daily loging directory name from the source directory
-        daily_logging_dir = os.path.split(self.source_dir)[1]
 
-        # Create the destination directory path
-        destination_subdir = os.path.join(self.destination_dir, daily_logging_dir)
+        try:
+            # Get the daily loging directory name from the source directory
+            daily_logging_dir = os.path.split(self.source_dir)[1]
 
-        # Create the destination directory
-        os.system("ssh {} mkdir -p {}".format(self.destination, destination_subdir))
+            # Create the destination directory path
+            destination_subdir = os.path.join(self.destination_dir, daily_logging_dir)
 
-        logger.info("Destination directory created: " + destination_subdir)
+            # Create the destination directory
+            os.system("ssh {} mkdir -p {}".format(self.destination, destination_subdir))
 
-        # Create a destination directory for the video files
-        video_subdir = os.path.join(destination_subdir, "Video_recordings")
+            logger.info("Destination directory created: " + destination_subdir)
 
-        os.system("ssh {} mkdir -p {}".format(self.destination, video_subdir))
+            # Create a destination directory for the video files
+            video_subdir = os.path.join(destination_subdir, "Video_recordings")
 
-        logger.info("Destination video directory created: " + video_subdir)
-        
-        return destination_subdir, video_subdir
+            os.system("ssh {} mkdir -p {}".format(self.destination, video_subdir))
+
+            logger.info("Destination video directory created: " + video_subdir)
+            
+            return destination_subdir, video_subdir
+
+        except:
+            logger.error("Error in creating destination directory")
+            return None, None
 
     def transfer_logs(self, _destination_subdir):
         try:
@@ -206,20 +212,28 @@ class FileTransfer:
 
     def transfer_data(self, video_file_name ,test_run=False):
 
-        # Create folders at destination for the data transfer
-        destination_subdir, video_subdir = self.create_destination_folder()
+        try:
 
-        #Transfer video files
-        # hat_display.show_letter("V")
-        self.transfer_a_video(video_subdir, video_file_name ,test_run=test_run)
+            # Create folders at destination for the data transfer
+            destination_subdir, video_subdir = self.create_destination_folder()
 
-        # Check transfer status and delete transffered files from source directory
-        # hat_display.show_letter("C")
-        self.check_transfer_status(video_subdir, delete_original=False)
+            #Transfer video files
+            # hat_display.show_letter("V")
+            self.transfer_a_video(video_subdir, video_file_name ,test_run=test_run)
 
-        #Transfer log files
-        # hat_display.show_letter("L")
-        self.transfer_logs(destination_subdir)
+            # Check transfer status and delete transffered files from source directory
+            # hat_display.show_letter("C")
+            self.check_transfer_status(video_subdir, delete_original=False)
+
+            #Transfer log files
+            # hat_display.show_letter("L")
+            self.transfer_logs(destination_subdir)
+
+            logger.info("Data transfer completed successfully")
+
+        except:
+            logger.error("Data transfer process failed")
+            return None
 
 
 
