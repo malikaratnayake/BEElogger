@@ -12,6 +12,7 @@ import logging
 from datetime import datetime
 from queue import Queue, Empty
 from VideoStreamer import CameraStream
+from Sensors import Sensors
 LOGGER = logging.getLogger()
 
 
@@ -20,7 +21,6 @@ class CameraThread(Thread):
             self, 
             camera: Camera,
             streamer: CameraStream,
-            data_logger: Writers,
             unitmanager: UnitManager,
             name: str,
             stop_signal: Event,
@@ -35,7 +35,6 @@ class CameraThread(Thread):
         self.streamer = streamer
         self.video_end_time = None
         self.video_file_queue = video_file_queue
-        self.data_logger = data_logger
         self.camera.process_camera_mode(camera_mode, self.camera, self.streamer)
         
 
@@ -45,7 +44,7 @@ class CameraThread(Thread):
                 LOGGER.info(f"Stopping {self.name}. Stop signal received")
                 break
 
-            self.unitmanager.run_diagnostics(self.camera, self.stop_signal, self.data_logger)
+            self.unitmanager.run_diagnostics(self.camera, self.stop_signal)
 
             if self.camera.get_recording_status() is True:
                 recorded_video_file = self.camera.record_video()
@@ -79,6 +78,7 @@ class UnitManagerThread(Thread):
         filetransfer: FileTransfer,
         data_logger: Writers,
         video_file_queue: Queue,
+        sensors: Sensors,
         name: str,
         ) -> None:
         
@@ -91,6 +91,7 @@ class UnitManagerThread(Thread):
         self.video_file_queue = video_file_queue
         self.streaming_duration = streaming_duration
         self.streamer = streamer
+        self.sensors = sensors
 
     def run(self):
         while True:
@@ -115,6 +116,16 @@ class UnitManagerThread(Thread):
                 self.streamer.set_streaming_status(False)
                 time.sleep(2)
                 self.camera.set_recording_status(True)
+
+            current_time = round(time.time()) 
+            if self.sensors.time_to_record(current_time):       
+                    sensor_data = self.sensors.read_sensors()
+                    self.data_logger.log_sensor_data(current_time,
+                                                     sensor_data=sensor_data)
+            else:
+                pass
+
+            
 
 
 def main():
@@ -145,6 +156,7 @@ def main():
     data_logger = Writers()
     stop_signal = Event()
     video_file_queue = Queue(maxsize=10)
+    sensors = Sensors()
     
 
 
@@ -157,7 +169,6 @@ def main():
             stop_signal = stop_signal,
             streamer = streamer,
             video_file_queue = video_file_queue,
-            data_logger = data_logger,
             camera_mode = camera_mode,
             name = "CameraThread",
             ),
@@ -170,6 +181,7 @@ def main():
             filetransfer = filetransfer,
             data_logger = data_logger,
             video_file_queue = video_file_queue,
+            sensors = sensors,
             name = "UnitManagerThread",
             )
 

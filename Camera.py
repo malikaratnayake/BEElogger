@@ -106,7 +106,7 @@ class VideoRecorder:
         logger.info('Started Video recording: ' + video_filename)
         # unit_display.video_recording_led(recording = True)
 
-        os.system("libcamera-vid -v 0 -n --vflip --hflip --autofocus-mode continuous --autofocus-range full --autofocus-speed fast -t {} --framerate {} --width {} --height {} --codec {} -o {}".format(duration, 
+        os.system("libcamera-vid -v 0 -n --vflip --hflip -t {} --framerate {} --width {} --height {} --codec {} -o {}".format(duration, 
                                                                                                            self.video_fps, 
                                                                                                            self.video_resolution[0], 
                                                                                                            self.video_resolution[1], 

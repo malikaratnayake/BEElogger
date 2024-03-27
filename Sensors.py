@@ -7,12 +7,51 @@ from Initialiser import SensorDataLogger
 import socket
 import fcntl
 import struct
+import time
+import board
+import busio
+import adafruit_hts221
+import adafruit_tsl2591
+
+i2c = busio.I2C(board.SCL, board.SDA)
+hts_sensor = adafruit_hts221.HTS221(i2c)
+light_sensor = adafruit_tsl2591.TSL2591(i2c)
+light_sensor.gain = adafruit_tsl2591.GAIN_LOW
+light_sensor.integration_time = adafruit_tsl2591.INTEGRATIONTIME_200MS
+
 
 jsonreader = JsonReader()
 logger = logging.getLogger()
 sensor_data_logger = SensorDataLogger()
 
 round_off_digits = 3
+
+class EnvironmentSensor:
+    
+    def __init__(self):
+
+        return None
+    
+    
+    def read_temperature(self):
+        temperature = round(hts_sensor.temperature,2)
+        return temperature
+    
+    def read_humidity(self):
+        humidity = round(hts_sensor.relative_humidity,2)
+        return humidity
+    
+    def read_light(self):
+        light = round(light_sensor.lux,2)
+        return light
+    
+    def read_env_sensor(self):
+        _tempC = self.read_temperature()
+        _humidity = self.read_humidity()
+        _light = self.read_humidity()
+        
+        return _tempC, _humidity, _light
+
 
 
     
@@ -55,7 +94,7 @@ class PiSensor:
 
 
     
-class Sensors(PiSensor):
+class Sensors(PiSensor, EnvironmentSensor):
     next_record_time = 0
     record_interval = None
     latest_readings = None
@@ -64,6 +103,7 @@ class Sensors(PiSensor):
     
     def __init__(self):
         PiSensor.__init__(self)
+        EnvironmentSensor.__init__(self)
 
         self.record_interval = jsonreader.read_json_parameter('data_log_interval')
         self.latest_readings, self.sensors_initialised = self.initiate_sensors()
@@ -103,22 +143,39 @@ class Sensors(PiSensor):
             self.latest_readings.update(_system_data)
 
         return _system_data
+    
+    def get_environment_sensor_data(self):
+        _tempC, _humidity, _light = self.read_env_sensor()
+
+        _environment_sensor_data = {
+                                    'temperature': _tempC,
+                                    'humidity': _humidity,
+                                    'light': _light,
+                                }
+        if self.sensors_initialised is True:
+            self.latest_readings.update(_environment_sensor_data)
+
+        return _environment_sensor_data
+    
+
 
     def initiate_sensors(self):
 
         _rpi_sensor_data = self.get_rpi_sensor_data()
+        _environment_sensor_data = self.get_environment_sensor_data()
 
         # Combine the dictionary data
-        _sensor_data = {**_rpi_sensor_data}
+        _sensor_data = {**_rpi_sensor_data, **_environment_sensor_data}
 
         return _sensor_data, True
     
     def read_sensors(self):
 
         _rpi_sensor_data = self.get_rpi_sensor_data()
+        _environment_sensor_data = self.get_environment_sensor_data()
 
         # Combine the dictionary data
-        _sensor_data = {**_rpi_sensor_data}
+        _sensor_data = {**_rpi_sensor_data, **_environment_sensor_data}
 
         return _sensor_data
 

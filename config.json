@@ -4,14 +4,14 @@
     "min_storage": 5,
     "min_battery": 20,
     "total_space": 62579834880,
-    "cam_number": 42,
+    "cam_number": 43,
     "max_cam_number": 9,
     "data_log_interval": 30,
     "menu_hold_delay": 3,
     "startup_record_delay": 30,
     "video_resolution": [
-        1920,
-        1080
+        1280,
+        720
     ],
     "video_duration": 600,
     "test_video_duration": 60,
@@ -21,14 +21,14 @@
     "video_container": "h264",
     "video_quality": "HIGH",
     "video_format": "RGB888",
-    "video_sampling_interval": 0,
+    "video_sampling_interval": 3000,
     "diagnostic_interval": 15,
     "output_directory": "/home/pi-cam42/",
     "movement_threshold": 0.6,
     "calibration_time": 5,
-    "unit_turnon_time": "11:15:00",
-    "unit_turnoff_time": "10:40:00",
+    "unit_turnon_time": "09:00:00",
+    "unit_turnoff_time": "17:45:00",
     "turnoff_delay": 60,
     "destination_dir": "/home/pi-server/Data_Recieved/",
-    "destination": "pi-server@10.42.0.5"
+    "destination": "pi-server@10.42.0.1"
 }

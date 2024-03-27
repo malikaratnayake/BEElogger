@@ -51,7 +51,7 @@ class SetupDirectories:
     # Create a folder with the name in Camera_Number_YYYYMMDD format in the Monitoring_Data folder if it does not exist
     def create_camera_folder(self, camera_number):
         monitoring_data_folder = self.monitoring_data_dir
-        camera_folder = self.generate_folder_name
+        camera_folder = self.generate_folder_name()
         camera_folder_path = monitoring_data_folder + camera_folder
         print(camera_folder_path)
         if not os.path.exists(camera_folder_path):
@@ -151,7 +151,7 @@ class SensorDataLogger(DirectoryInfo):
         
     def create_csv_file(self, _csv_file_name):
         with open(_csv_file_name, 'w', newline='') as csvfile:
-            fieldnames = ['Date', 'Time' ,'CPU Temperature', 'Free Space', 'Total Space']
+            fieldnames = ['Date', 'Time' ,'CPU Temperature', 'Free Space', 'Total Space', 'Temperature', 'Humidity', 'Light']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
         

@@ -399,7 +399,7 @@ class SystemTasks():
         time.sleep(2)
         os.system("sudo shutdown now")
 
-    def run_diagnostics(self, camera, stop_signal, data_logger):
+    def run_diagnostics(self, camera, stop_signal):
         diagnostic_run = False 
         recording_capability = True
         if self.latest_diagnosis is None:
@@ -413,7 +413,6 @@ class SystemTasks():
                 self.next_diagonistic_run = time.time() + self.diagnostic_interval
 
         if diagnostic_run is True: 
-            data_logger.log_sensor_data(time.time(), piSensor.get_rpi_sensor_data())
             if recording_capability is False:
                 shutdown_requirement = self.assess_shutdown_requirement()
             else:
