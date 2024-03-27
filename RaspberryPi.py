@@ -366,7 +366,6 @@ class SystemTasks():
     
     def assess_recording_capability(self):
         _unit_status = self.get_unit_status()
-        print(_unit_status)
         logger.info("Unit status: " + str(_unit_status))
 
         if _unit_status["cpu_temp"] > self.max_operating_temp:

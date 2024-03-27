@@ -41,7 +41,7 @@ class VideoRecorder:
         self.video_container = video_info[5]
         self.video_codec = video_info[6]
         self.record_end_time = jsonreader.read_json_parameter('unit_turnon_time')
-        self.video_directory = directory_info.get_video_folder()
+        # self.video_directory = directory_info.get_video_folder()
         self.record_to_log()
         self.video_file_list = video_file_logger.create_video_list_file()
         self.test_video_file_list = None
@@ -68,7 +68,7 @@ class VideoRecorder:
         logger.info('Video codec: ' + str(self.video_codec))
         logger.info('Video bitrate: ' + str(self.video_bitrate))
         logger.info('Video container: ' + str(self.video_container))
-        logger.info('Video directory: ' + str(self.video_directory))
+        logger.info('Video directory: ' + str(directory_info.get_video_folder()))
 
 
     def generate_video_name(self, test=False):
@@ -85,7 +85,7 @@ class VideoRecorder:
 
         #return the filename in the string format /video_directory/Camera_1_YYYYMMDD_HHMMSS
         
-        return self.video_directory + video_filename
+        return directory_info.get_video_folder() + video_filename
 
 
 

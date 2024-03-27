@@ -71,6 +71,8 @@ class CSVWriter():
         time_now_str = datetime.fromtimestamp(time_now).strftime('%H:%M:%S')
         # self.log_event("Logging data to file...")
 
+        print(sensor_data)
+
 
         with open (self.csv_file_path, "a") as csvfile:
             writer = csv.writer(csvfile, delimiter=',')

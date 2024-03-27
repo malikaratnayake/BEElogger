@@ -26,8 +26,8 @@ class SetupDirectories:
         self.output_directory = self.create_output_directory()
         self.monitoring_data_dir = self.create_monitoring_data_folder()
         self.filename_prefix = self.create_filename_prefix()
-        self.daily_logging_dir = self.create_daily_logging_folder()
-        self.video_folder = self.create_camera_output_folder()
+        self.daily_logging_dir, self.video_folder = self.create_daily_logging_folder()
+        # self.video_folder = self.create_camera_output_folder()
 
     #Read the output_directory to save the files in from the json file
     def create_output_directory(self):
@@ -67,7 +67,9 @@ class SetupDirectories:
         else:
             pass
 
-        return folder_directory
+        video_directory = self.create_video_data_folder(folder_directory)
+
+        return folder_directory, video_directory
     
 
     def generate_folder_name(self):
@@ -76,9 +78,11 @@ class SetupDirectories:
         folder_name = '/Camera_'+str(camera_number) + '_' + str(current_date)
 
         return folder_name
+
+        
     
-    def create_camera_output_folder(self):
-        video_folder_name = self.daily_logging_dir + str("/Video_recordings")
+    def create_video_data_folder(self, _folder_directory):
+        video_folder_name = _folder_directory + str("/Video_recordings")
         if not os.path.exists(video_folder_name):
             os.makedirs(video_folder_name)
         else:
@@ -225,30 +229,24 @@ class SetupEventLogger:
         self.logger.error(msg, *args, **kwargs)
     
 
+
+
+# class LoggingThread:
+#     """A wrapper around `threading.Thread` with convenience methods for logging.
     
-# class SetupEventLogger:
-#     logger = logging.getLogger()
-
-#     def __init__(self, _log_directory, _filename_prefix):
-#         # Set the logging level
-#         self.logger.setLevel(logging.DEBUG)
-
-#         log_filename = _log_directory +_filename_prefix + '.log'
-        
-#         # Create a file handler
-#         file_handler = logging.FileHandler(log_filename)
-
-#         # Set the format of the log messages
-#         formatter = logging.Formatter('%(asctime)s - %(module)s - %(levelname)s - %(filename)s - %(funcName)s - %(message)s')
-#         file_handler.setFormatter(formatter)
-
-#         # Add the file handler to the logger
-#         self.logger.addHandler(file_handler)
-
-#         self.logger.info('Logger initialized at directory ' + log_filename)
-
-#         return None
+#     This class extends the functionality of the `threading.Thread` class by providing
+#     additional convenience methods for logging. It serves as a base class for other
+#     threads that require logging capabilities.
     
+#     Attributes:
+#         name (str): The name of the thread.
+#         logger (logging.Logger): The logger object used for logging.
+#     """
+#     def __init__(self, name: str, logger: logging.Logger) -> None:
+#         super().__init__(name=name)
+
+#         self.logger = logger
+
 #     def debug(self, msg, *args, **kwargs):
 #         """Log a debug message."""
 #         self.logger.debug(msg, *args, **kwargs)
@@ -264,39 +262,6 @@ class SetupEventLogger:
 #     def error(self, msg, *args, **kwargs):
 #         """Log an error message."""
 #         self.logger.error(msg, *args, **kwargs)
-    
-
-class LoggingThread:
-    """A wrapper around `threading.Thread` with convenience methods for logging.
-    
-    This class extends the functionality of the `threading.Thread` class by providing
-    additional convenience methods for logging. It serves as a base class for other
-    threads that require logging capabilities.
-    
-    Attributes:
-        name (str): The name of the thread.
-        logger (logging.Logger): The logger object used for logging.
-    """
-    def __init__(self, name: str, logger: logging.Logger) -> None:
-        super().__init__(name=name)
-
-        self.logger = logger
-
-    def debug(self, msg, *args, **kwargs):
-        """Log a debug message."""
-        self.logger.debug(msg, *args, **kwargs)
-
-    def info(self, msg, *args, **kwargs):
-        """Log an info message."""
-        self.logger.info(msg, *args, **kwargs)
-
-    def warning(self, msg, *args, **kwargs):
-        """Log a warning message."""
-        self.logger.warning(msg, *args, **kwargs)
-
-    def error(self, msg, *args, **kwargs):
-        """Log an error message."""
-        self.logger.error(msg, *args, **kwargs)
     
 class SetupVideoFileList(DirectoryInfo):
 
@@ -334,6 +299,7 @@ class SetupMonitoring(SetupDirectories):
         SetupDirectories.__init__(self, camera_number)
         SetupEventLogger(self.daily_logging_dir, self.filename_prefix)
         logging.info('Monitoring initialized at directory ' + self.daily_logging_dir)
+        logging.info('Video data recording initialized at directory ' + self.video_folder)
 
         return None
 

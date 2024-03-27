@@ -146,9 +146,13 @@ def main():
     camera_number = args.camera_number
     stream_duration = args.stream_duration
 
-    LOGGER.info(f"Starting processing at :  {datetime.fromtimestamp(startup_time)}")
+    
 
     Initialiser.SetupMonitoring(camera_number)
+    LOGGER.info(f"Starting processing at :  {datetime.fromtimestamp(startup_time)}")
+    time.sleep(5)
+
+
     filetransfer = FileTransfer()
     camera = Camera.VideoRecorder()
     unitmanager = UnitManager()

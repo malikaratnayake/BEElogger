@@ -48,7 +48,7 @@ class EnvironmentSensor:
     def read_env_sensor(self):
         _tempC = self.read_temperature()
         _humidity = self.read_humidity()
-        _light = self.read_humidity()
+        _light = self.read_light()
         
         return _tempC, _humidity, _light
 
