@@ -26,9 +26,10 @@
     "output_directory": "/home/pi-cam43/",
     "movement_threshold": 0.6,
     "calibration_time": 5,
-    "unit_turnon_time": "09:00:00",
-    "unit_turnoff_time": "18:50:00",
+    "unit_turnon_time": "06:00:00",
+    "unit_turnoff_time": "21:00:00",
     "turnoff_delay": 60,
     "destination_dir": "/home/pi-server/Data_Recieved/",
-    "destination": "pi-server@10.42.0.1"
+    "destination": "pi-server@10.42.0.1",
+    "delete_original": false
 }

@@ -104,7 +104,7 @@ class UnitManagerThread(Thread):
                 video_file = self.video_file_queue.get()
                 output_video = self.camera.convert_to_mp4(video_file)
                 self.unitmanager.delete_a_file(video_file)
-                # self.filetransfer.transfer_data(output_video)
+                self.unitmanager.run_EcomotionZip(output_video)
                 self.video_file_queue.task_done()
 
 
@@ -221,6 +221,8 @@ def main():
         LOGGER.info(f"Joining {thread.name}")
         thread.join()
 
+    # unitmanager.run_EcomotionZip()
+
     # Transfer recorded files to the server
     # try:
     #     filetransfer.transfer_data()
@@ -232,8 +234,8 @@ def main():
     LOGGER.info(f"Finished processing at :  {datetime.fromtimestamp(end)}")
 
     # Shut down the Raspberry Pi
-    LOGGER.info("Shutting down the Raspberry Pi")
-    unitmanager.schedule_unit_turnoff()
+    # LOGGER.info("Shutting down the Raspberry Pi")
+    # unitmanager.schedule_unit_turnoff()
 
 
 if __name__ == "__main__":

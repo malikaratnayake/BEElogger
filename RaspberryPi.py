@@ -15,6 +15,31 @@ jsonreader = JsonHandler()
 directory_info = DirectoryInfo()
 piSensor= Sensors()
 
+class VideoCompression:
+    video_directory = None
+    output_directory = None
+
+    def __init__(self):
+        pass
+
+
+    def run_EcomotionZip(self, video_directory):
+        self.output_directory = directory_info.get_video_folder()
+        self.delete_original = jsonreader.read_json_parameter('delete_original')
+    
+        # try:
+        home_directory = os.path.expanduser("~")
+        ecomotionzip_path = os.path.join(home_directory, "EcoMotionZip", "EcoMotionZip", "app.py")
+
+        logger.info("Compressing video files")
+        os.system("/home/pi-cam43/pi-dev/bin/python {} --video_source {} --output_directory {}".format(ecomotionzip_path, video_directory, self.output_directory))
+        logger.info("Video files compressed successfully. Output directory is: " + self.output_directory)
+        # except:
+        #     logger.error("Error in compressing video files")
+
+        return None
+
+
 
 class FileTransfer:
     source_dir = None
@@ -342,6 +367,7 @@ class SystemTasks():
         self.last_recording_status = False
         self.unit_is_operational = True
         self.next_diagonistic_run = None
+        self.in_recording_period = False
 
          
     def set_unit_operational_status(self, _status):
@@ -374,6 +400,7 @@ class SystemTasks():
      
         elif self.assess_shutdown_requirement() is True:
             return False
+    
         else:
             logger.info("Unit is operational")
             return True
@@ -382,9 +409,6 @@ class SystemTasks():
         _unit_status = self.latest_diagnosis
         if _unit_status["free_space"] < self.min_storage:
             logger.warning("Free space is low: " + str(_unit_status["free_space"]))
-            return True
-        elif datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") >= self.unit_turnoff_time:
-            logger.warning("Unit turnoff time reached: " + self.unit_turnoff_time)
             return True
         else:
             return False
@@ -416,6 +440,14 @@ class SystemTasks():
                 shutdown_requirement = self.assess_shutdown_requirement()
             else:
                 shutdown_requirement = False
+                if self.assess_recording_schedule() is False:
+                    camera.set_recording_status(False)
+                else:
+                    if self.in_recording_period is False:
+                        self.in_recording_period = True
+                        camera.set_recording_status(True)
+                    else:
+                        pass
 
             if shutdown_requirement is True:
                 stop_signal.set()
@@ -436,6 +468,19 @@ class SystemTasks():
             pass
 
 
+
+
+    def assess_recording_schedule(self):
+        if (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") >= self.unit_turnoff_time) or (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") < self.unit_turnon_time):
+            self.in_recording_period = False
+            logger.warning("Current time is out of recording schedule")
+            return False
+        else:
+            return True
+
+
+        
+
         
 
         
@@ -450,14 +495,14 @@ class SystemTasks():
 
     #     return round(duration.total_seconds())
     
-    def assess_ready_to_record(self, _sensor_data):
-        cpu_temp = _sensor_data["cpu_temp"]
-        free_space = _sensor_data["free_space"]
+    # def assess_ready_to_record(self, _sensor_data):
+    #     cpu_temp = _sensor_data["cpu_temp"]
+    #     free_space = _sensor_data["free_space"]
 
-        if (cpu_temp > self.max_operating_temp) or (free_space < self.min_storage):
-            return False
-        else:
-            return True
+    #     if (cpu_temp > self.max_operating_temp) or (free_space < self.min_storage):
+    #         return False
+    #     else:
+    #         return True
         
     # def restart_unit(self):
     #     # unit_display.show_restart_message()
@@ -468,9 +513,9 @@ class SystemTasks():
 
 
 
-class UnitManager(SystemTasks, FileTransfer):
-
+class UnitManager(SystemTasks, FileTransfer, VideoCompression):
 
     def __init__(self) -> None:
+        VideoCompression().__init__()
         super().__init__()
         pass
