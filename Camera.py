@@ -8,6 +8,7 @@ import os
 import logging
 from Utilities import JsonReader
 from Initialiser import DirectoryInfo, SetupVideoFileList
+from datetime import datetime
 
 logger = logging.getLogger()
 jsonreader = JsonReader()
@@ -41,6 +42,8 @@ class VideoRecorder:
         self.video_container = video_info[5]
         self.video_codec = video_info[6]
         self.record_end_time = jsonreader.read_json_parameter('unit_turnon_time')
+        self.recording_start_time = jsonreader.read_json_parameter('recording_start_time')
+        self.recording_end_time = jsonreader.read_json_parameter('recording_end_time')
         # self.video_directory = directory_info.get_video_folder()
         self.record_to_log()
         self.video_file_list = video_file_logger.create_video_list_file()
@@ -90,35 +93,39 @@ class VideoRecorder:
 
 
     def record_video(self, test = False):
-        if test is True:
-            if self.test_video_file_list is None:
-                self.test_video_file_list = video_file_logger.create_video_list_file(test=True)
+        if self.assess_recording_schedule() is True:
+            if test is True:
+                if self.test_video_file_list is None:
+                    self.test_video_file_list = video_file_logger.create_video_list_file(test=True)
 
-            duration = self.test_video_duration
-            video_filename = self.generate_video_name(test = True)
-            video_file_list = self.test_video_file_list
+                duration = self.test_video_duration
+                video_filename = self.generate_video_name(test = True)
+                video_file_list = self.test_video_file_list
+            else:
+                duration = self.video_duration
+                video_filename = self.generate_video_name(test = False)
+                video_file_list = self.video_file_list
+
+            video_file_logger.add_video_to_list(video_file_list, video_filename)
+            logger.info('Started Video recording: ' + video_filename)
+            # unit_display.video_recording_led(recording = True)
+
+            os.system("libcamera-vid -v 0 -n --vflip --hflip -t {} --framerate {} --width {} --height {} --codec {} -o {}".format(duration, 
+                                                                                                            self.video_fps, 
+                                                                                                            self.video_resolution[0], 
+                                                                                                            self.video_resolution[1], 
+                                                                                                            self.video_codec, 
+                                                                                                            video_filename))
+            logger.info('Video saved to ' + video_filename)
+            time.sleep(2)
+            self.recording_status = False
+
+            return video_filename
+
         else:
-            duration = self.video_duration
-            video_filename = self.generate_video_name(test = False)
-            video_file_list = self.video_file_list
 
-        video_file_logger.add_video_to_list(video_file_list, video_filename)
-        logger.info('Started Video recording: ' + video_filename)
-        # unit_display.video_recording_led(recording = True)
-
-        os.system("libcamera-vid -v 0 -n --vflip --hflip -t {} --framerate {} --width {} --height {} --codec {} -o {}".format(duration, 
-                                                                                                           self.video_fps, 
-                                                                                                           self.video_resolution[0], 
-                                                                                                           self.video_resolution[1], 
-                                                                                                           self.video_codec, 
-                                                                                                           video_filename))
-        logger.info('Video saved to ' + video_filename)
-        time.sleep(2)
-        self.recording_status = False
-
-
-        return video_filename
-    
+            return None
+        
 
 
     def schedule_video_recording(self, video_end_time, current_status):
@@ -149,7 +156,14 @@ class VideoRecorder:
             streamer.set_streaming_status(True)
         else:
             camera.set_recording_status(True)
-                                                                                                          
+
+    def assess_recording_schedule(self):
+        if (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") >= self.recording_start_time) or (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") < self.recording_end_time):
+            logger.info('Current time is within recoring time.')
+            return True
+        else:
+            time.sleep(self.video_duration)
+            return False
 
 
 
