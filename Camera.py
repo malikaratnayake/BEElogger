@@ -33,8 +33,8 @@ class VideoRecorder:
         req_video_info = ['video_duration', 'video_resolution', 'video_fps', 'video_quality', 'video_bitrate', 'video_container', 'video_codec', 'test_video_duration']
         self.video_sampling_interval = jsonreader.read_json_parameter('video_sampling_interval')
         video_info = jsonreader.read_json_parameters(req_video_info)
-        self.video_duration = video_info[0]*1000
-        self.test_video_duration = video_info[7]*1000
+        self.video_duration = video_info[0]
+        self.test_video_duration = video_info[7]
         self.video_resolution = video_info[1]
         self.video_fps = video_info[2]
         self.video_quality = video_info[3]
@@ -98,11 +98,11 @@ class VideoRecorder:
                 if self.test_video_file_list is None:
                     self.test_video_file_list = video_file_logger.create_video_list_file(test=True)
 
-                duration = self.test_video_duration
+                duration = self.test_video_duration*1000
                 video_filename = self.generate_video_name(test = True)
                 video_file_list = self.test_video_file_list
             else:
-                duration = self.video_duration
+                duration = self.video_duration*1000
                 video_filename = self.generate_video_name(test = False)
                 video_file_list = self.video_file_list
 
@@ -158,10 +158,11 @@ class VideoRecorder:
             camera.set_recording_status(True)
 
     def assess_recording_schedule(self):
-        if (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") >= self.recording_start_time) or (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") < self.recording_end_time):
+        if (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") >= self.recording_start_time) and (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") < self.recording_end_time):
             logger.info('Current time is within recoring time.')
             return True
         else:
+            logger.info('Current time is NOT within recording schedule. Sleeping camera for ' + str(self.video_duration) + ' seconds.')
             time.sleep(self.video_duration)
             return False
 

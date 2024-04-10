@@ -414,6 +414,16 @@ class SystemTasks():
             return False
         
 
+    def assess_restart_requirement(self):
+        recorded_date = directory_info.get_current_date()
+        date_now = time.strftime("%Y%m%d", time.localtime())
+
+        if recorded_date != date_now:
+            logger.info("Restarting unit as current date has changed")
+            return True
+        else:
+            return False
+
         
     def schedule_unit_turnoff(self):
        # turn_off_duration = self.calculate_unit_off_duration(self.unit_turnon_time)
@@ -427,27 +437,29 @@ class SystemTasks():
         recording_capability = True
         if self.latest_diagnosis is None:
             recording_capability = self.assess_recording_capability()
+            restart_requirement = self.assess_restart_requirement()
             diagnostic_run = True
             self.next_diagonistic_run = time.time() + self.diagnostic_interval
         else:
             if time.time() > self.next_diagonistic_run:
                 recording_capability = self.assess_recording_capability()
+                restart_requirement = self.assess_restart_requirement()
                 diagnostic_run = True
                 self.next_diagonistic_run = time.time() + self.diagnostic_interval
 
-        if diagnostic_run is True: 
+        if diagnostic_run is True:
+            if restart_requirement is True:
+                self.schedule_restart()
+                # print("funny")
+            else:
+                pass
+
+
             if recording_capability is False:
                 shutdown_requirement = self.assess_shutdown_requirement()
             else:
                 shutdown_requirement = False
-                if self.assess_recording_schedule() is False:
-                    camera.set_recording_status(False)
-                else:
-                    if self.in_recording_period is False:
-                        self.in_recording_period = True
-                        camera.set_recording_status(True)
-                    else:
-                        pass
+
 
             if shutdown_requirement is True:
                 stop_signal.set()
@@ -470,13 +482,18 @@ class SystemTasks():
 
 
 
-    def assess_recording_schedule(self):
-        if (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") >= self.unit_turnoff_time) or (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") < self.unit_turnon_time):
-            self.in_recording_period = False
-            logger.warning("Current time is out of recording schedule")
-            return False
-        else:
-            return True
+    # def assess_recording_schedule(self):
+    #     if (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") >= self.unit_turnoff_time) or (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") < self.unit_turnon_time):
+    #         self.in_recording_period = False
+    #         logger.warning("Current time is out of recording schedule")
+    #         return False
+    #     else:
+    #         return True
+        
+    def schedule_restart(self):
+        logger.info("Scheduling unit restart")
+        os.system("sudo reboot")
+        return None
 
 
         

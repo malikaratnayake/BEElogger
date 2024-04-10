@@ -18,6 +18,7 @@ class SetupDirectories:
     daily_logging_dir = None
     video_folder = None
     filename_prefix = None
+    current_date = time.strftime("%Y%m%d", time.localtime())
 
     def __init__(self, camera_number=None):
         if camera_number is not None:
@@ -118,6 +119,9 @@ class DirectoryInfo(SetupDirectories):
     
     def get_filename_prefix(self):
         return self.filename_prefix
+    
+    def get_current_date(self):
+        return self.current_date
 
     
 

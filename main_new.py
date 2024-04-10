@@ -44,8 +44,6 @@ class CameraThread(Thread):
                 LOGGER.info(f"Stopping {self.name}. Stop signal received")
                 break
 
-            self.unitmanager.run_diagnostics(self.camera, self.stop_signal)
-
             if self.camera.get_recording_status() is True:
                 recorded_video_file = self.camera.record_video()
                 if recorded_video_file is not None:
@@ -65,20 +63,14 @@ class CameraThread(Thread):
 
             else:
                 pass
- 
 
-class UnitManagerThread(Thread):
+class VideoProcessingThread(Thread):
     def __init__(
         self, 
         unitmanager: UnitManager,
         camera: Camera,
-        streamer: CameraStream,
-        streaming_duration: int,
         stop_signal: Event,
-        filetransfer: FileTransfer,
-        data_logger: Writers,
         video_file_queue: Queue,
-        sensors: Sensors,
         name: str,
         ) -> None:
         
@@ -86,12 +78,7 @@ class UnitManagerThread(Thread):
         self.unitmanager = unitmanager
         self.stop_signal = stop_signal
         self.camera = camera
-        self.filetransfer = filetransfer
-        self.data_logger = data_logger
         self.video_file_queue = video_file_queue
-        self.streaming_duration = streaming_duration
-        self.streamer = streamer
-        self.sensors = sensors
 
     def run(self):
         while True:
@@ -106,6 +93,40 @@ class UnitManagerThread(Thread):
                 self.unitmanager.delete_a_file(video_file)
                 self.unitmanager.run_EcomotionZip(output_video)
                 self.video_file_queue.task_done()
+            else:
+                pass
+
+ 
+
+class UnitManagerThread(Thread):
+    def __init__(
+        self, 
+        unitmanager: UnitManager,
+        camera: Camera,
+        streamer: CameraStream,
+        streaming_duration: int,
+        stop_signal: Event,
+        filetransfer: FileTransfer,
+        data_logger: Writers,
+        sensors: Sensors,
+        name: str,
+        ) -> None:
+        
+        super().__init__(name=name)
+        self.unitmanager = unitmanager
+        self.stop_signal = stop_signal
+        self.camera = camera
+        self.filetransfer = filetransfer
+        self.data_logger = data_logger
+        self.streaming_duration = streaming_duration
+        self.streamer = streamer
+        self.sensors = sensors
+
+    def run(self):
+        while True:
+            if self.stop_signal.is_set():
+                LOGGER.info(f"Stopping {self.name}. Stop signal received")
+                break
 
 
             if self.streamer.get_streaming_status() is True:
@@ -122,6 +143,7 @@ class UnitManagerThread(Thread):
                     sensor_data = self.sensors.read_sensors()
                     self.data_logger.log_sensor_data(current_time,
                                                      sensor_data=sensor_data)
+                    self.unitmanager.run_diagnostics(self.camera, self.stop_signal)
             else:
                 pass
 
@@ -184,9 +206,15 @@ def main():
             streaming_duration = stream_duration,
             filetransfer = filetransfer,
             data_logger = data_logger,
-            video_file_queue = video_file_queue,
             sensors = sensors,
             name = "UnitManagerThread",
+            ),
+        video_processor := VideoProcessingThread( 
+            unitmanager = unitmanager,
+            stop_signal = stop_signal,
+            camera = camera,
+            video_file_queue = video_file_queue,
+            name = "VideoProcessingThread",
             )
 
     )
