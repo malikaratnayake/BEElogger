@@ -1,8 +1,7 @@
 import json
 from pathlib import Path
 import logging
-import os
-# from sense_hat import SenseHat
+
 
 
 class JsonReader:

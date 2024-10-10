@@ -1,44 +1,30 @@
-"""This python script is used to log recorded data and information to text files and 
-to display important information on the sensor hat display."""
-# Path: pi-cam-dev/codebase/Writers.py
-
-# Import dependencies
 import time
 import os
 from datetime import datetime
 from typing import Any
-import json
-from Utilities import JsonReader
 import csv
-from pathlib import Path
 import logging
-from Initialiser import DirectoryInfo
 
 
 
-jsonreader = JsonReader()
 logger = logging.getLogger()
-directory_info = DirectoryInfo()
 
 
     
-class CSVWriter():
+class Writers():
     
-    csv_file_path = None
-    daily_logging_folder = None
-    record_interval = None
-
-    def __init__(self):
-        self.monitoring_data_dir = directory_info.get_daily_logging_folder()
-        self.record_interval = jsonreader.read_json_parameter('data_log_interval')
+    def __init__(self,
+                 directory_info) -> None:
+        
+        self.directory_info = directory_info  
+        self.monitoring_data_dir = self.directory_info.get_daily_logging_folder()
         self.csv_file_path = self.initialise_csv_file()
         logger.info("CSVWriter initialised")
 
 
     def generate_csv_filename(self):
         current_date = time.strftime("%Y%m%d", time.localtime())
-        camera_number  = jsonreader.read_json_parameter('cam_number')
-        file_name = '/Camera_'+str(camera_number) + '_' + str(current_date) + '.csv'
+        file_name = f'/{current_date}.csv'
 
         return file_name
 
@@ -52,7 +38,7 @@ class CSVWriter():
         return None
         
     def initialise_csv_file(self):
-        csv_file_name = directory_info.get_filename_prefix() + '.csv'
+        csv_file_name = self.directory_info.get_filename_prefix() + '.csv'
         csv_file_path = self.monitoring_data_dir + csv_file_name
 
         if not os.path.exists(csv_file_path):
@@ -71,8 +57,6 @@ class CSVWriter():
         time_now_str = datetime.fromtimestamp(time_now).strftime('%H:%M:%S')
         # self.log_event("Logging data to file...")
 
-        print(sensor_data)
-
 
         with open (self.csv_file_path, "a") as csvfile:
             writer = csv.writer(csvfile, delimiter=',')
@@ -90,10 +74,6 @@ class CSVWriter():
 
         return None
     
-# Class to inherit from the DisplayWriter and CSVWriter classes       
-class Writers(CSVWriter):
-    def __init__(self):
-        CSVWriter.__init__(self)
 
     
 

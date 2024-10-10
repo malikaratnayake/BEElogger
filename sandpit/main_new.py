@@ -4,7 +4,7 @@ This script is used to record video and sensor readings to a file all day."""
 import time
 from threading import Thread, Event
 import argparse
-from RaspberryPi import  FileTransfer, UnitManager
+from sandpit.RaspberryPi import UnitManager
 from Writers import Writers
 import Camera
 import Initialiser
@@ -106,7 +106,6 @@ class UnitManagerThread(Thread):
         streamer: CameraStream,
         streaming_duration: int,
         stop_signal: Event,
-        filetransfer: FileTransfer,
         data_logger: Writers,
         sensors: Sensors,
         name: str,
@@ -116,7 +115,6 @@ class UnitManagerThread(Thread):
         self.unitmanager = unitmanager
         self.stop_signal = stop_signal
         self.camera = camera
-        self.filetransfer = filetransfer
         self.data_logger = data_logger
         self.streaming_duration = streaming_duration
         self.streamer = streamer
@@ -175,7 +173,6 @@ def main():
     time.sleep(5)
 
 
-    filetransfer = FileTransfer()
     camera = Camera.VideoRecorder()
     unitmanager = UnitManager()
     streamer = CameraStream()
@@ -204,7 +201,6 @@ def main():
             camera = camera,
             streamer = streamer,
             streaming_duration = stream_duration,
-            filetransfer = filetransfer,
             data_logger = data_logger,
             sensors = sensors,
             name = "UnitManagerThread",

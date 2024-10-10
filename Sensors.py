@@ -1,13 +1,8 @@
-
 import logging
 import os
-from Utilities import JsonReader
-from datetime import datetime
-from Initialiser import SensorDataLogger
 import socket
 import fcntl
 import struct
-import time
 import board
 import busio
 import adafruit_hts221
@@ -20,18 +15,14 @@ light_sensor.gain = adafruit_tsl2591.GAIN_LOW
 light_sensor.integration_time = adafruit_tsl2591.INTEGRATIONTIME_200MS
 
 
-jsonreader = JsonReader()
 logger = logging.getLogger()
-sensor_data_logger = SensorDataLogger()
 
-round_off_digits = 3
 
 class EnvironmentSensor:
     
     def __init__(self):
 
         return None
-    
     
     def read_temperature(self):
         temperature = round(hts_sensor.temperature,2)
@@ -51,7 +42,6 @@ class EnvironmentSensor:
         _light = self.read_light()
         
         return _tempC, _humidity, _light
-
 
 
     
@@ -87,7 +77,7 @@ class PiSensor:
             )[20:24])
             return ip_address
         except Exception as e:
-            print(f"Error getting IP address for {interface}: {str(e)}")
+            logger.warning(f"Error getting IP address for {interface}: {str(e)}")
             return None
 
 
@@ -96,19 +86,21 @@ class PiSensor:
     
 class Sensors(PiSensor, EnvironmentSensor):
     next_record_time = 0
-    record_interval = None
     latest_readings = None
     sensors_initialised = False
 
     
-    def __init__(self):
+    def __init__(self,
+                 data_log_interval: int
+                 ) -> None:
+        
+        self.data_log_interval = data_log_interval
+
         PiSensor.__init__(self)
         EnvironmentSensor.__init__(self)
 
-        self.record_interval = jsonreader.read_json_parameter('data_log_interval')
         self.latest_readings, self.sensors_initialised = self.initiate_sensors()
     
-
         return None
 
     
@@ -116,7 +108,7 @@ class Sensors(PiSensor, EnvironmentSensor):
     def time_to_record(self, _current_time):
         self.moved = False
         if (_current_time >= self.next_record_time):
-            self.next_record_time = _current_time + self.record_interval
+            self.next_record_time = _current_time + self.data_log_interval
             return True
         else:
             return False
