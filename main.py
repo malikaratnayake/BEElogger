@@ -60,7 +60,7 @@ class Config:
         self.delete_original = delete_original
 
 # Load configuration from JSON file
-with open('config.json', 'r') as f:
+with open('./NatBeeSense/config.json', 'r') as f:
     __config_dict = json.load(f)
 
 CONFIG = Config(**__config_dict)
