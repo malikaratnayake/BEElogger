@@ -7,16 +7,17 @@
         1280,
         720
     ],
-    "video_duration": 60,
+    "video_duration": 600,
     "video_fps": 30,
     "video_codec": "h264",
     "video_container": "h264",
     "video_sampling_interval": 1200,
-    "diagnostic_interval": 120,
+    "diagnostic_interval": 1200,
     "streaming_duration": 30,
     "unit_turnon_time": "06:00:00",
     "unit_turnoff_time": "21:00:00",
     "recording_start_time": "06:00:00",
     "recording_end_time": "21:00:00",
-    "delete_original": false
+    "compress_video": true,
+    "delete_original": true
 }

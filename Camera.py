@@ -1,4 +1,3 @@
-
 import time
 import os
 import logging
@@ -12,9 +11,13 @@ from threading import Condition
 from http import server
 import io
 
+# Initialize the logger
 logger = logging.getLogger()
 
 class VideoRecorder:
+    """
+    Class to handle video recording functionality.
+    """
 
     def __init__(self,
                  video_duration: int,
@@ -28,7 +31,9 @@ class VideoRecorder:
                  directory_info,
                  video_file_logger
                  ) -> None:
-        
+        """
+        Initialize the VideoRecorder with the given parameters.
+        """
         self.video_duration = video_duration
         self.video_resolution = video_resolution
         self.video_fps = video_fps
@@ -39,10 +44,10 @@ class VideoRecorder:
         self.video_sampling_interval = video_sampling_interval
         self.directory_info = directory_info
         self.video_file_logger = video_file_logger
-        # self.record_to_log()
         self.video_file_list = self.video_file_logger.create_video_list_file()
         self.set_recording_status(False)
 
+        # Log the initialization parameters
         logger.info('Camera initialised with following parameters: ')
         logger.info('Video duration: ' + str(self.video_duration))
         logger.info('Video resolution: ' + str(self.video_resolution))
@@ -54,54 +59,57 @@ class VideoRecorder:
         logger.info('Recording end time: ' + str(self.recording_end_time))
         logger.info('Video sampling interval: ' + str(self.video_sampling_interval))
 
-
     def set_recording_status(self, _status):
+        """
+        Set the recording status.
+        """
         self.recording_status = _status
 
     def get_recording_status(self):
+        """
+        Get the current recording status.
+        """
         return self.recording_status
 
-
     def generate_video_name(self):
+        """
+        Generate a unique video filename based on the current time and directory info.
+        """
         time_string = time.strftime("%H%M%S", time.localtime())
         name_prefix = self.directory_info.get_filename_prefix()
-
         video_filename = name_prefix + '_' + time_string + '.' + self.video_container
-        
         return self.directory_info.get_video_folder() + video_filename
 
-
-
     def record_video(self):
+        """
+        Record a video if the current time is within the recording schedule.
+        """
         if self.assess_recording_schedule() is True:
- 
-            duration = self.video_duration*1000
+            duration = self.video_duration * 1000
             video_filename = self.generate_video_name()
             video_file_list = self.video_file_list
 
+            # Log the video recording start
             self.video_file_logger.add_video_to_list(video_file_list, video_filename)
             logger.info('Started Video recording: ' + video_filename)
-            # unit_display.video_recording_led(recording = True)
 
-            os.system("libcamera-vid -v 0 -n --vflip --hflip -t {} --framerate {} --width {} --height {} --codec {} -o {}".format(duration, 
-                                                                                                            self.video_fps, 
-                                                                                                            self.video_resolution[0], 
-                                                                                                            self.video_resolution[1], 
-                                                                                                            self.video_codec, 
-                                                                                                            video_filename))
+            # Execute the video recording command
+            os.system("libcamera-vid -v 0 -n --vflip --hflip -t {} --framerate {} --width {} --height {} --codec {} -o {}".format(
+                duration, self.video_fps, self.video_resolution[0], self.video_resolution[1], self.video_codec, video_filename))
+
+            # Log the video recording end
             logger.info('Video saved to ' + video_filename)
             time.sleep(2)
             self.recording_status = False
 
             return video_filename
-
         else:
-
             return None
-        
-
 
     def schedule_video_recording(self, video_end_time, current_status):
+        """
+        Schedule the next video recording based on the end time and sampling interval.
+        """
         if video_end_time is None:
             return current_status
         else:
@@ -110,8 +118,10 @@ class VideoRecorder:
             else:
                 return False
 
-
     def process_camera_mode(self, camara_mode, camera, streamer):
+        """
+        Process the camera mode to switch between streaming and recording.
+        """
         if camara_mode == 'stream':
             camera.set_recording_status(False)
             streamer.set_streaming_status(True)
@@ -119,8 +129,12 @@ class VideoRecorder:
             camera.set_recording_status(True)
 
     def assess_recording_schedule(self):
-        if (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") >= self.recording_start_time) and (datetime.fromtimestamp(time.time()).strftime("%H:%M:%S") < self.recording_end_time):
-            logger.info('Current time is within recoring time.')
+        """
+        Assess if the current time is within the recording schedule.
+        """
+        current_time = datetime.fromtimestamp(time.time()).strftime("%H:%M:%S")
+        if self.recording_start_time <= current_time < self.recording_end_time:
+            logger.info('Current time is within recording time.')
             return True
         else:
             logger.info('Current time is NOT within recording schedule. Sleeping camera for ' + str(self.video_duration) + ' seconds.')
@@ -128,45 +142,51 @@ class VideoRecorder:
             return False
 
 class VideoProcessor:
+    """
+    Class to handle video processing tasks such as conversion and compression.
+    """
 
     def __init__(self, 
                  video_fps: int,
                  directory_info
                  ) -> None: 
-        
+        """
+        Initialize the VideoProcessor with the given parameters.
+        """
         self.video_fps = video_fps
         self.directory_info = directory_info
         
     def convert_to_mp4(self, video_filename):
-        # Extract the video filename before extension
+        """
+        Convert the given video file to MP4 format.
+        """
         input_video_filename = video_filename.split('.')[0]
-
-        #add mp4 as extnsion for the output video filename
         output_video_filename = input_video_filename + '.mp4'
 
+        # Execute the conversion command
         os.system("ffmpeg -framerate {} -i {} -c copy {}".format(self.video_fps, video_filename, output_video_filename))
 
         return output_video_filename
 
-    def run_EcomotionZip(self, video_directory):
+    def run_EcomotionZip(self, video_directory, delete_original):
+        """
+        Compress video files using the EcoMotionZip tool.
+        """
         output_directory = self.directory_info.get_video_folder()
-    
         home_directory = os.path.expanduser("~")
         ecomotionzip_path = os.path.join(home_directory, "EcoMotionZip", "EcoMotionZip", "app.py")
 
         logger.info("Compressing video files")
-        os.system("/home/pi-cam43/pi-dev/bin/python {} --video_source {} --output_directory {}".format(ecomotionzip_path, video_directory, output_directory))
+        os.system("/home/pi-cam43/pi-dev/bin/python {} --video_source {} --output_directory {} --delete_original {}".format(
+            ecomotionzip_path, video_directory, output_directory, delete_original))
         logger.info("Video files compressed successfully. Output directory is: " + output_directory)
 
         return None
     
     def delete_video(self, video_name):
-        """Deletes a file from the source directory when a file name is provided.
-
-        Args:
-            file_name: The name of the file to delete.
         """
-
+        Delete the specified video file from the source directory.
+        """
         if os.path.isfile(video_name):
             os.remove(video_name)
             logger.info("File deleted from source directory: " + video_name)
@@ -174,39 +194,39 @@ class VideoProcessor:
             raise FileNotFoundError(f"File not found: {video_name}")
         
         return None
-    
 
-'''Methods and functions for the camera streaming functionality'''
-
-
+# HTML page for the camera streaming functionality
 PAGE = """\
 <html>
 <head>
 <title>NatBeeSense Hive Monitoring Preview </title>
-<meta http-equiv="refresh" content="10">  <!-- Auto-refresh the page every 1 second -->
+<meta http-equiv="refresh" content="10">  <!-- Auto-refresh the page every 10 seconds -->
 </head>
 <body>
 <h1>NatBeeSense Hive Monitoring Preview</h1>
 <button onclick="window.open('/stream.mjpg')">Open Stream in a separate tab</button>
 <br></br>
-
 <img src="stream.mjpg" width="640" height="360" />
-
 </body>
 </html>
 """
 
-
 class StreamingOutput(io.BufferedIOBase):
+    """
+    Class to handle the streaming output.
+    """
+
     def __init__(self, condition):
         self.frame = None
         self.buffer = io.BytesIO()
         self.condition = condition
 
     def write(self, buf):
+        """
+        Write the buffer to the streaming output.
+        """
         if buf.startswith(b'\xff\xd8'):
-            # New frame, copy the existing buffer's content and notify all
-            # clients it's available
+            # New frame, copy the existing buffer's content and notify all clients it's available
             self.buffer.truncate()
             with self.condition:
                 self.frame = self.buffer.getvalue()
@@ -215,8 +235,14 @@ class StreamingOutput(io.BufferedIOBase):
         return self.buffer.write(buf)
 
 class StreamingHandler(server.BaseHTTPRequestHandler):
+    """
+    HTTP request handler for streaming.
+    """
 
     def do_GET(self):
+        """
+        Handle GET requests for streaming.
+        """
         if self.path == '/':
             self.send_response(301)
             self.send_header('Location', '/index.html')
@@ -255,21 +281,31 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.end_headers()
 
 class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
+    """
+    HTTP server for streaming with threading support.
+    """
     allow_reuse_address = True
     daemon_threads = True
 
-
+# Condition object for thread synchronization
 condition = Condition()
+# Streaming output object
 stream = StreamingOutput(condition=condition)
+# File output object for the stream
 output = FileOutput(file=stream)
 
 class VideoStreamer:
+    """
+    Class to handle video streaming functionality.
+    """
 
     def __init__(self,
                  video_resolution: tuple,
                  streaming_duration: int,
                  pisensor) -> None:
-        
+        """
+        Initialize the VideoStreamer with the given parameters.
+        """
         self.video_resolution = video_resolution
         self.streaming_duration = streaming_duration
         self.server = None
@@ -281,31 +317,44 @@ class VideoStreamer:
         self.port = 7000
 
     def set_streaming_status(self, status):
+        """
+        Set the streaming status.
+        """
         self.streaming_status = status
 
     def get_streaming_status(self):
+        """
+        Get the current streaming status.
+        """
         return self.streaming_status
-    
 
     def setup_server(self):
+        """
+        Setup the streaming server.
+        """
         _server = StreamingServer(('', self.port), StreamingHandler)
-
         return _server
 
     def setup_camera(self):
-
+        """
+        Setup the camera for streaming.
+        """
         _camera = Picamera2()
-        video_config = _camera.create_video_configuration(main={"size": self.video_resolution}, transform=Transform(vflip=True, hflip =True))
+        video_config = _camera.create_video_configuration(main={"size": self.video_resolution}, transform=Transform(vflip=True, hflip=True))
         _camera.configure(video_config)
-
         return _camera
     
     def setup_encoder(self):
+        """
+        Setup the encoder for streaming.
+        """
         _encoder = JpegEncoder()
-
         return _encoder
 
     def start_streaming(self):
+        """
+        Start the video streaming.
+        """
         if self.server is None:
             self.server = self.setup_server()
             
@@ -315,41 +364,24 @@ class VideoStreamer:
         try:
             self.stream_camera.start_recording(self.stream_encoder, output)
             self.server.serve_forever()
-
         except:
             self.stream_camera.stop_recording()
             self.server.shutdown()
             
     def stop_streaming(self):
-        
+        """
+        Stop the video streaming.
+        """
         self.set_streaming_status(False)
         self.stream_camera.stop_recording()
         self.stream_camera.stop()
         self.stream_camera.close()
-        
         self.server.shutdown()
         
-
         return None
     
     def get_streaming_duration(self):
+        """
+        Get the streaming duration.
+        """
         return self.streaming_duration
-
-
-
-        
-
-
-        
-    
-
-
-
-
-
-
-        
-
-    
-
-        
