@@ -17,7 +17,7 @@
     "unit_turnon_time": "06:00:00",
     "unit_turnoff_time": "21:00:00",
     "recording_start_time": "06:00:00",
-    "recording_end_time": "21:00:00",
+    "recording_end_time": "21:00:01",
     "compress_video": true,
     "delete_original": true
 }
