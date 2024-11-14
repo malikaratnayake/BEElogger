@@ -1,0 +1,22 @@
+{
+    "max_operating_temp": 80,
+    "min_storage": 5,
+    "sensor_log_interval": 300,
+    "video_resolution": [
+        1280,
+        720
+    ],
+    "video_duration": 60,
+    "video_fps": 30,
+    "video_codec": "h264",
+    "video_container": "h264",
+    "video_sampling_interval": 120,
+    "diagnostic_interval": 1200,
+    "streaming_duration": 30,
+    "recording_start_time": "06:00:00",
+    "recording_end_time": "21:00:01",
+    "compress_video": true,
+    "EcoMotionZip_path": "/home/pi-cam43/EcoMotionZip/",
+    "python_interpreter_path": "/home/pi-cam43/pi-dev/",
+    "delete_original": true
+}

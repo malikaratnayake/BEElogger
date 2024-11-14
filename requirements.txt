@@ -1,0 +1,5 @@
+picamera2
+adafruit-circuitpython-hts221
+adafruit-circuitpython-tsl2591
+
+

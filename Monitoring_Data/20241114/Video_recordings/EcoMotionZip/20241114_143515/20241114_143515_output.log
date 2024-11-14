@@ -1,0 +1,26 @@
+[2024-11-14 14:36:31,123] [INFO    ] [MainThread    ] Starting processing at :  2024-11-14 14:36:31.115473
+[2024-11-14 14:36:31,123] [INFO    ] [MainThread    ] Running main() with Config:  {'video_source': '/home/pi-cam43/NatBeeSense/Monitoring_Data/20241114/Video_recordings/20241114_143515.mp4', 'output_directory': '/home/pi-cam43/NatBeeSense/Monitoring_Data/20241114/Video_recordings', 'record_duration': 60, 'number_of_videos': 1, 'camera_resolution': [1920, 1080], 'camera_fps': 32, 'raspberrypi_camera': False, 'delete_original': True, 'embed_timestamps': True, 'reader_sleep_seconds': 1, 'reader_flush_proportion': 0.9, 'downscale_factor': 16, 'dilate_kernel_size': 128, 'movement_threshold': 40, 'persist_frames': 0, 'full_frame_guarantee': 300, 'video_codec': 'X264', 'num_opencv_threads': 10}
+[2024-11-14 14:36:31,124] [INFO    ] [MainThread    ] Outputting to Outputting to /home/pi-cam43/NatBeeSense/Monitoring_Data/20241114/Video_recordings/EcoMotionZip
+[2024-11-14 14:36:31,149] [INFO    ] [MainThread    ] Will sleep 1 seconds if reading queue fills up with 460 frames. This *should not happen* if you're using a live webcam, else the frames are being processed too slowly!
+[2024-11-14 14:36:31,150] [INFO    ] [MainThread    ] Dilation kernel downscaled by 16x from 128 to 8
+[2024-11-14 14:36:31,150] [INFO    ] [MainThread    ] Will flush buffer to output file every 64 frames
+[2024-11-14 14:36:31,150] [INFO    ] [MainThread    ] Starting ReaderThread
+[2024-11-14 14:36:31,151] [INFO    ] [MainThread    ] Starting MotionThread
+[2024-11-14 14:36:31,152] [INFO    ] [MainThread    ] Starting WriterThread
+[2024-11-14 14:36:42,338] [INFO    ] [WriterThread  ] Written 50 frames so far
+[2024-11-14 14:36:49,109] [INFO    ] [WriterThread  ] Written 100 frames so far
+[2024-11-14 14:36:52,651] [INFO    ] [WriterThread  ] Written 150 frames so far
+[2024-11-14 14:36:55,929] [INFO    ] [WriterThread  ] Written 200 frames so far
+[2024-11-14 14:36:58,633] [INFO    ] [WriterThread  ] Written 250 frames so far
+[2024-11-14 14:37:01,627] [INFO    ] [WriterThread  ] Written 300 frames so far
+[2024-11-14 14:37:05,997] [INFO    ] [WriterThread  ] Written 350 frames so far
+[2024-11-14 14:37:08,180] [INFO    ] [ReaderThread  ] Adding None to end of reading queue
+[2024-11-14 14:37:08,748] [INFO    ] [WriterThread  ] Written 400 frames so far
+[2024-11-14 14:37:10,145] [INFO    ] [WriterThread  ] Written 450 frames so far
+[2024-11-14 14:37:11,290] [INFO    ] [MainThread    ] All child processes appear to have finished! Exiting infinite loop...
+[2024-11-14 14:37:11,290] [INFO    ] [MainThread    ] Joining ReaderThread
+[2024-11-14 14:37:11,290] [INFO    ] [MainThread    ] Joining MotionThread
+[2024-11-14 14:37:11,290] [INFO    ] [MainThread    ] Joining WriterThread
+[2024-11-14 14:37:11,291] [INFO    ] [MainThread    ] Finished processing at :  2024-11-14 14:37:11.290993
+[2024-11-14 14:37:11,291] [INFO    ] [MainThread    ] Finished main() in 40.18 seconds.
+[2024-11-14 14:37:11,302] [INFO    ] [MainThread    ] Deleted original video file: /home/pi-cam43/NatBeeSense/Monitoring_Data/20241114/Video_recordings/20241114_143515.mp4

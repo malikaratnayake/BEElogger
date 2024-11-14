@@ -1,0 +1,4 @@
+/home/pi-cam43/NatBeeSense/Monitoring_Data/20241114/Video_recordings/20241114_143131.h264
+/home/pi-cam43/NatBeeSense/Monitoring_Data/20241114/Video_recordings/20241114_143212.h264
+/home/pi-cam43/NatBeeSense/Monitoring_Data/20241114/Video_recordings/20241114_143515.h264
+/home/pi-cam43/NatBeeSense/Monitoring_Data/20241114/Video_recordings/20241114_143818.h264
