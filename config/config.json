@@ -6,11 +6,11 @@
         1280,
         720
     ],
-    "video_duration": 60,
+    "video_duration": 600,
     "video_fps": 30,
     "video_codec": "h264",
     "video_container": "h264",
-    "video_sampling_interval": 120,
+    "video_sampling_interval": 1200,
     "diagnostic_interval": 1200,
     "streaming_duration": 30,
     "recording_start_time": "06:00:00",

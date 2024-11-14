@@ -9,7 +9,7 @@
 - Real-time monitoring of temperature, humidity, pressure, and light intensity.
 - Data logging for historical analysis.
 - Easy setup and configuration with a Raspberry Pi.
-- Open-source software for customization and extension.
+- Open-source software for customisation and extension.
 - Support for EcoMotionZip software for video compression to optimise storage resources on the Raspberry Pi.
 - Automatic processing of recorded videos using BEETrack software, which leverages AI and deep learning to analyse bee activity.
 
@@ -88,37 +88,42 @@ Follow these steps to install and set up the BEElogger software.
     ```bash
     sudo apt-get install git
     ```
-5. Clone the repository:
-    ```bash
-    git clone https://github.com/malikaratnayake/BEElogger.git
-    ```
-6. Create a Python virtual environment named `BEElogger-env`:
+5. Create a Python virtual environment named `BEElogger-env`:
     ```bash
     python3 -m venv --system-site-packages BEElogger-env
     ```
-7. Activate the virtual environment:
+6. Activate the virtual environment:
     ```bash
     source BEElogger-env/bin/activate
     ```
-8. Install the EcoMotionZip software:
+7. Install the dependencies associated with [Adafruit Sensors](https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi) and restart when prompted:
+    ```bash
+    cd ~
+    pip3 install --upgrade adafruit-python-shell
+    wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/raspi-blinka.py
+    sudo -E env PATH=$PATH python3 raspi-blinka.py
+    ```
+8. Activate the virtual environment again:
+    ```bash
+    source BEElogger-env/bin/activate
+    ```
+9. Clone the BEElogger repository:
+    ```bash
+    git clone https://github.com/malikaratnayake/BEElogger.git
+    ```
+10. Install the EcoMotionZip software:
     ```bash
     git clone https://github.com/malikaratnayake/EcoMotionZip.git
     ```
-9. Navigate to the project directory:
+11. Navigate to the BEElogger directory:
     ```bash
     cd BEElogger
     ```
-10. Install the required dependencies:
+12. Install the required dependencies:
     ```bash
     pip install -r requirements.txt
     ```
-11. Configure the system settings in the `config.json` file.
 
-12. Run the BEElogger software:
-    ```bash
-    python /src/main.py
-    ```
-    ```
 
 ### Configuration
 
