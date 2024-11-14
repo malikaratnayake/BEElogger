@@ -30,7 +30,94 @@ The data collection methodology of the BEElogger system leverages Python's multi
 ![Overview of the BEElogger Data Collection Pipeline](./docs/figures/BEELogger.jpg)
 *Figure 1: Overview of the BEElogger Data Collection Pipeline*
 
-### Repository Structure
+## Installation and Setup
+
+### Prerequisites
+
+Before installing the BEElogger system, ensure you have the following prerequisites:
+
+- A Raspberry Pi 4 Model B with Raspbian OS installed. Use [Raspberry Pi Imager](https://www.raspberrypi.com/software/) to install the Raspbian OS. It is recommended to use the 64-bit lite version of the latest software. Configure the following settings under OS Customisation:
+    - **Hostname**: `BEElogger`
+    - **Username**: `beelogger`
+    - **Wireless LAN Configuration**: Add the SSID and Password of the WiFi network.
+- A Raspberry Pi Camera Module v2.
+- Adafruit [HTS221](https://www.adafruit.com/product/4535) and [TSL2591](https://www.adafruit.com/product/1980) sensors.
+- A microSD card with at least 32GB of storage.
+- A stable internet connection for downloading dependencies.
+
+### Hardware Setup
+
+1. Connect the Raspberry Pi Camera Module v2 to the Raspberry Pi.
+2. Connect the Adafruit [HTS221](https://www.adafruit.com/product/4535) and [TSL2591](https://www.adafruit.com/product/1980) sensors to the Raspberry Pi using the appropriate GPIO pins. More information on pin connections can be found in sensor documentation.
+3. Insert the microSD card with Raspbian OS into the Raspberry Pi.
+4. Connect the power supply to the Raspberry Pi and power it on.
+
+### Software Setup
+
+The Raspberry Pi can be accessed headlessly through SSH to set up the software and install dependencies. If the Wireless LAN configuration is correctly entered, the Raspberry Pi can be accessed from any device on the same WiFi network.
+
+#### Accessing the Raspberry Pi via SSH
+
+1. Open a terminal on your computer and connect to the Raspberry Pi using SSH.:
+    ```bash
+    ssh <username>@<hostname>.local
+    ```
+    Replace `<username>` and `<hostname>` with the actual username and hostname (e.g. `beelogger@BEElogger.local`).
+2. Enter the password for the `beelogger` user when prompted.
+
+Once connected, you can proceed with the software setup and installation of dependencies. 
+
+#### Installing BEElogger software
+
+Follow these steps to install and set up the BEElogger software.
+
+1. Update the package list and upgrade the installed packages:
+    ```bash
+    sudo apt-get update
+    sudo apt-get upgrade
+    ```
+2. Install Git:
+    ```bash
+    sudo apt-get install git
+    ```
+3. Clone the repository:
+    ```bash
+    git clone https://github.com/malikaratnayake/BEElogger.git
+    ```
+4. Creeate a python virtual environment named `BEElogger-env`.
+    ```bash
+    python3 -m venv --system-site-packages BEElogger-env
+    ```
+5. Activate the virtual environment:
+    ```bash
+    source BEElogger-env/bin/activate
+    ```
+6. Install EcoMotionZip software:
+    ```bash
+    git clone https://github.com/malikaratnayake/EcoMotionZip.git
+    ```
+7. Navigate to the project directory:
+    ```bash
+    cd BEElogger
+    ```
+8. Install the required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+9. Configure the system settings in the `config.json` file.
+
+10. Run the BEElogger software:
+    ```bash
+    python /src/main.py
+    ```
+
+### Configuration
+
+Edit the `config.json` file to customize the system settings, such as video recording durations, data sampling intervals, and output directories. Refer to the comments in the `config.json` file for detailed instructions on each configuration option.
+
+
+
+## Repository Structure
 
 
 ```
