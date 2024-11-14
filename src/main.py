@@ -1,5 +1,6 @@
 import time
 import json
+import os
 from threading import Thread, Event
 import argparse
 from writers import Writers
@@ -58,7 +59,7 @@ class Config:
         self.delete_original = delete_original
 
 # Load configuration from JSON file
-with open('./config/config.json', 'r') as f:
+with open(f'{os.path.expanduser("~")}/NatBeeSense/config/config.json', 'r') as f:
     __config_dict = json.load(f)
 
 CONFIG = Config(**__config_dict)
