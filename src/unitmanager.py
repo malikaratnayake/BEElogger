@@ -23,24 +23,25 @@ class SetupDirectories:
         """
         Initialize the directories.
         """
-        self.output_directory = self.get_output_directory()
+        # self.output_directory = self.get_output_directory()
         self.monitoring_data_dir = self.create_monitoring_data_folder()
         self.filename_prefix = self.create_name_prefix()
         self.daily_logging_dir, self.video_folder = self.create_daily_logging_folder()
 
-    def get_output_directory(self):
-        """
-        Read the output_directory to save the files in from the json file.
-        """
-        pwd = os.path.dirname(os.path.abspath(__file__))
-        output_directory = '/'.join(pwd.split('/')[:-1]) + '/'
-        return output_directory
+    # def get_output_directory(self):
+    #     """
+    #     Read the output_directory to save the files in from the json file.
+    #     """
+    #     pwd = os.path.dirname(os.path.abspath(__file__))
+    #     output_directory = '/'.join(pwd.split('/')[:-1]) + '/'
+    #     return output_directory
 
     def create_monitoring_data_folder(self):
         """
         Create Monitoring_Data Folder in the current directory, if it does not exist.
         """
-        monitoring_data_folder = self.output_directory + 'Monitoring_Data'
+        rpi_home_directory = os.path.expanduser("~")
+        monitoring_data_folder = f"{rpi_home_directory}/Monitoring_Data"
         if not os.path.exists(monitoring_data_folder):
             os.makedirs(monitoring_data_folder)
         return monitoring_data_folder
@@ -77,21 +78,54 @@ class DirectoryInfo(SetupDirectories):
     Class to provide directory information.
     """
     def __init__(self):
+        """
+        Initialize DirectoryInfo by calling parent class constructor.
+        """
         super().__init__()
 
     def get_video_folder(self):
+        """
+        Get the path to the video storage folder.
+        
+        Returns:
+            str: Path to the video folder
+        """
         return self.video_folder
     
     def get_monitoring_data_folder(self):
+        """
+        Get the path to the monitoring data folder.
+        
+        Returns:
+            str: Path to the monitoring data folder
+        """
         return self.monitoring_data_dir
     
     def get_daily_logging_folder(self):
+        """
+        Get the path to the daily logging folder.
+        
+        Returns:
+            str: Path to the daily logging folder
+        """
         return self.daily_logging_dir
     
     def get_filename_prefix(self):
+        """
+        Get the current filename prefix based on date.
+        
+        Returns:
+            str: Filename prefix in format /YYYYMMDD
+        """
         return self.filename_prefix
     
     def get_current_date(self):
+        """
+        Get the current date string.
+        
+        Returns:
+            str: Current date in format YYYYMMDD
+        """
         return self.current_date
 
 class SensorDataLogger(DirectoryInfo):
