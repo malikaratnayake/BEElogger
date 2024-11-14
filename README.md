@@ -76,39 +76,48 @@ Follow these steps to install and set up the BEElogger software.
     sudo apt-get update
     sudo apt-get upgrade
     ```
-2. Install Git:
+2. Install the PiCamera2 library:
+    ```bash
+    sudo apt install -y python3-picamera2
+    ```
+3. Install FFMPEG:
+    ```bash
+    sudo apt install ffmpeg
+    ```
+4. Install Git:
     ```bash
     sudo apt-get install git
     ```
-3. Clone the repository:
+5. Clone the repository:
     ```bash
     git clone https://github.com/malikaratnayake/BEElogger.git
     ```
-4. Creeate a python virtual environment named `BEElogger-env`.
+6. Create a Python virtual environment named `BEElogger-env`:
     ```bash
     python3 -m venv --system-site-packages BEElogger-env
     ```
-5. Activate the virtual environment:
+7. Activate the virtual environment:
     ```bash
     source BEElogger-env/bin/activate
     ```
-6. Install EcoMotionZip software:
+8. Install the EcoMotionZip software:
     ```bash
     git clone https://github.com/malikaratnayake/EcoMotionZip.git
     ```
-7. Navigate to the project directory:
+9. Navigate to the project directory:
     ```bash
     cd BEElogger
     ```
-8. Install the required dependencies:
+10. Install the required dependencies:
     ```bash
     pip install -r requirements.txt
     ```
-9. Configure the system settings in the `config.json` file.
+11. Configure the system settings in the `config.json` file.
 
-10. Run the BEElogger software:
+12. Run the BEElogger software:
     ```bash
     python /src/main.py
+    ```
     ```
 
 ### Configuration
