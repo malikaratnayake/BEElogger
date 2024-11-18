@@ -16,7 +16,7 @@
     "recording_start_time": "06:00:00",
     "recording_end_time": "21:00:01",
     "compress_video": true,
-    "EcoMotionZip_path": "/home/pi-cam43/EcoMotionZip/",
-    "python_interpreter_path": "/home/pi-cam43/pi-dev/",
+    "EcoMotionZip_path": "/home/beelogger/EcoMotionZip/",
+    "python_interpreter_path": "/home/beelogger/BEElogger-env/",
     "delete_original": true
 }

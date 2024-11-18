@@ -59,8 +59,11 @@ class Config:
         self.delete_original = delete_original
 
 # Load configuration from JSON file
-with open(f'{os.path.expanduser("~")}/NatBeeSense/config/config.json', 'r') as f:
+script_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+with open(os.path.join(script_directory, "config/config.json"), "r") as f:
     __config_dict = json.load(f)
+# with open(f'{os.path.expanduser("~")}/BEElogger/config/config.json', 'r') as f:
+#     __config_dict = json.load(f)
 
 CONFIG = Config(**__config_dict)
 

@@ -63,9 +63,7 @@ The Raspberry Pi can be accessed headlessly through SSH to set up the software a
     ssh <username>@<hostname>.local
     ```
     Replace `<username>` and `<hostname>` with the actual username and hostname (e.g. `beelogger@BEElogger.local`).
-2. Enter the password for the `beelogger` user when prompted.
-
-Once connected, you can proceed with the software setup and installation of dependencies. 
+2. Enter the password for the `beelogger` user when prompted. Once connected, you can proceed with the software setup and installation of dependencies. 
 
 #### Installing BEElogger software
 
@@ -123,49 +121,113 @@ Follow these steps to install and set up the BEElogger software.
     ```bash
     pip install -r requirements.txt
     ```
+## Usage
 
-
-### Configuration
-
-Edit the `config.json` file to customize the system settings, such as video recording durations, data sampling intervals, and output directories. Refer to the comments in the `config.json` file for detailed instructions on each configuration option.
-
-
-
-## Repository Structure
-
-
+### Repository Structure
+```
+├── config/
+│   ├── config.json
+├── docs/
+│   ├── figures
+│       ├── BEElogger.jpg
+├── src/
+│   ├── main.py
+│   ├── camera.py
+|   ├── sensors.py
+|   ├── unitmanager.py
+|   ├── writers.py
+├── README.md
+├── LICENSE
+├── requirements.txt
+├── .gitignore
 ```
 
-### Installation
+- `src/`: Contains the source code for the project.
+    - `main.py`: The main entry point for the programme.
+    - `camera.py`: Handles camera operations and image capture.
+    - `sensors.py`: Manages sensor data collection.
+    - `unitmanager.py`: Manages different units and operations of the system.
+    - `writers.py`: Handles data writing operations.
+- `config/`: Configuration files for the system.
+    - `config.json`: Configuration for the system settings.
+- `docs/`: Documentation files for the project.
+    - `figures/`: Contains images and figures used in the documentation.
+        - `BEElogger.jpg`: Overview of the BEElogger Data Collection Pipeline.
+- `README.md`: This file.
+- `LICENSE`: The licence for the project.
+- `requirements.txt`: List of dependencies required for the project.
+- `.gitignore`: Specifies files and directories to be ignored by git.
 
-To install and set up the BEElogger system, follow these steps:
+### Configuration Files
 
-1. Clone the repository:
+This file contains the configuration settings for the BEElogger. Below are the variables and their descriptions:
+
+- `max_operating_temp` (int): Maximum operating temperature in degrees Celsius.
+- `min_storage` (int): Minimum storage space in gigabytes.
+- `sensor_log_interval` (int): Interval in seconds between sensor logs.
+- `video_resolution` (list): Resolution of the videos in the format [width, height].
+- `video_duration` (int): Duration of the videos in seconds.
+- `video_fps` (int): Frame rate of the videos.
+- `video_codec` (str): Codec used for video encoding.
+- `video_container` (str): Container format for videos.
+- `video_sampling_interval` (int): Interval in seconds between video captures.
+- `diagnostic_interval` (int): Interval in seconds between diagnostic checks.
+- `streaming_duration` (int): Duration of the video streaming in seconds.
+- `recording_start_time` (str): Start time for recording in HH:MM:SS format.
+- `recording_end_time` (str): End time for recording in HH:MM:SS format.
+- `compress_video` (bool): Whether to compress the video files.
+- `EcoMotionZip_path` (str): Path to the EcoMotionZip directory.
+- `python_interpreter_path` (str): Path to the Python interpreter.
+- `delete_original` (bool): Whether to delete the original video files after processing.
+
+
+### Running the BEElogger
+
+To run the BEElogger system, follow these steps:
+
+1. **Activate the Virtual Environment**: Activate the virtual environment using the following command:
     ```bash
-    git clone https://github.com/yourusername/NatBeeSense.git
+    source BEElogger-env/bin/activate
     ```
-2. Navigate to the project directory:
+
+2. **Run the Main Script**: Execute the main script to start the BEElogger system:
     ```bash
-    cd NatBeeSense
+    python BEElogger/src/main.py
     ```
-3. Install the required dependencies:
+
+3. **Monitor the Output and Access Data**: The system will start recording video and logging environmental data. Monitor the terminal output for any messages or errors. The monitoring data and logs will be saved to the `Monitoring_Data` folder in the home directory.
+
+### Running the BEElogger at Startup
+
+To run the BEElogger system at startup using `cron`, follow these steps:
+
+1. **Open the Crontab File**: Open the crontab file for editing by running:
     ```bash
-    sudo ./install_dependencies.sh
+    crontab -e
     ```
-4. Configure the system settings in the `config.json` file.
-5. Run the BEElogger software:
+
+2. **Add a New Cron Job**: Add the following line to the crontab file to run the main script at startup:
     ```bash
-    python3 bee_logger.py
+    @reboot /bin/sleep 60 && /path/to/BEElogger-env/bin/python3.11 /path/to/BEElogger/src/main.py
+    ```
+    Make sure to replace `/path/to/BEElogger-env` and `/path/to/BEElogger` with the actual paths to your virtual environment and project directory. With the default directories, the cron job would be as follows:
+    ```bash
+    @reboot /bin/sleep 60 && /home/beelogger/BEElogger-env/bin/python3.11 /home/beelogger/BEElogger/src/main.py
     ```
 
-### Usage
+3. **Save and Exit**: Save the changes and exit the editor. The script will now run automatically at startup.
 
-Once the system is set up, it will automatically start recording video and logging environmental data. You can access the recorded data and video files in the designated output directory specified in the configuration file.
 
-### Contributing
 
-We welcome contributions to the BEElogger project. If you have any ideas, suggestions, or bug reports, please open an issue or submit a pull request on GitHub.
+## License
 
-### License
+This project is licensed under the GNU General Public License Version 3. See the [LICENSE](./LICENSE) file for more details.
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+
+## Authors
+
+This project is developed and maintained by:
+
+- **Malika Nisal Ratnayake** - [GitHub](https://github.com/malikaratnayake)
+- **Asaduz Zaman** - [GitHub](https://github.com/asadiceiu)
+
