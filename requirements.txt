@@ -1,5 +1,6 @@
 adafruit-circuitpython-hts221
 adafruit-circuitpython-tsl2591
 opencv-python
-
+python-dotenv
+boto3
 
