@@ -1,12 +1,12 @@
 {
-    "max_operating_temp": 80,
+    "max_operating_temp": 90,
     "min_storage": 5,
     "sensor_log_interval": 300,
     "video_resolution": [
         1280,
         720
     ],
-    "video_duration": 600,
+    "video_duration": 60,
     "video_fps": 30,
     "video_codec": "h264",
     "video_container": "h264",
@@ -18,5 +18,6 @@
     "compress_video": true,
     "EcoMotionZip_path": "/home/beelogger/EcoMotionZip/",
     "python_interpreter_path": "/home/beelogger/BEElogger-env/",
-    "delete_original": true
+    "delete_original": true,
+    "upload_to_aws": false
 }

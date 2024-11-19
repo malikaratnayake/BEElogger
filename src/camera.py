@@ -174,13 +174,13 @@ class VideoProcessor:
 
         return output_video_filename
 
-    def run_EcomotionZip(self, video_directory):
+    def run_EcomotionZip(self, video_directory, upload_to_aws):
         """
         Compress video files using the EcoMotionZip tool.
         """
-        video_base_name = os.path.basename(video_directory) # Get the base name of the video directory: ../dagh/hdsgah/68675.mp4 to 68675.mp4
+        video_base_name = os.path.basename(video_directory)[:-4] # Get the base name of the video directory: ../dagh/hdsgah/68675.mp4 to 68675.mp4
         output_directory = self.directory_info.get_video_folder()
-        compressed_file_name = f"{output_directory}/EcoMotionZIP/{video_base_name}/{video_base_name}.avi"
+        compressed_file_name = f"{output_directory}/EcoMotionZip/{video_base_name}/{video_base_name}.avi"
 
         # home_directory = os.path.expanduser("~")
         # os.path.join(home_directory, "EcoMotionZip", "EcoMotionZip", "app.py")
@@ -192,7 +192,8 @@ class VideoProcessor:
 
 
             # Upload the processed video files to AWS S3 bucket
-            self.upload_to_aws(compressed_file_name)
+            if upload_to_aws is True:
+                self.upload_to_aws(compressed_file_name)
 
         except Exception as e:
             logger.warning("Error compressing video files: " + str(e))
@@ -240,8 +241,9 @@ class VideoProcessor:
         else:
             try:
                 import boto3
+                logger.info("Uploading video to AWS S3 bucket")
                 s3 = boto3.client('s3', aws_access_key_id=self.aws_access_key_id, aws_secret_access_key=self.aws_secret_access_key, region_name=self.aws_region)
-                s3.upload_file(compressed_file_name, self.aws_bucket_name, compressed_file_name.split('/')[-1])
+                s3.upload_file(compressed_file_name, self.aws_bucket_name, "uploads/"+compressed_file_name.split('/')[-1])
                 logger.info("Video uploaded to AWS S3 bucket: " + compressed_file_name)
             except Exception as e:
                 logger.warning("Error uploading video to AWS S3 bucket: " + str(e))

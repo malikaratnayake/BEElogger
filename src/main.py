@@ -36,6 +36,7 @@ class Config:
                  EcoMotionZip_path: str,
                  python_interpreter_path: str,
                  delete_original: bool,
+                 upload_to_aws: bool 
                  ) -> None:
         """
         Initialize the Config class with the given parameters.
@@ -57,6 +58,7 @@ class Config:
         self.EcoMotionZip_path = EcoMotionZip_path
         self.python_interpreter_path = python_interpreter_path
         self.delete_original = delete_original
+        self.upload_to_aws = upload_to_aws
 
 # Load configuration from JSON file
 script_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -131,6 +133,7 @@ class VideoProcessingThread(Thread):
         videoprocessor: VideoProcessor,
         stop_signal: Event,
         video_file_queue: Queue,
+        upload_to_aws: bool,
         name: str,
         ) -> None:
         """
@@ -140,6 +143,7 @@ class VideoProcessingThread(Thread):
         self.stop_signal = stop_signal
         self.videoprocessor = videoprocessor
         self.video_file_queue = video_file_queue
+        self.upload_to_aws = upload_to_aws
 
     def run(self):
         """
@@ -156,7 +160,7 @@ class VideoProcessingThread(Thread):
                 output_video = self.videoprocessor.convert_to_mp4(video_file)
                 self.videoprocessor.delete_video(video_file)
                 if CONFIG.compress_video is True:
-                    self.videoprocessor.run_EcomotionZip(output_video)
+                    self.videoprocessor.run_EcomotionZip(output_video, self.upload_to_aws)
                 self.video_file_queue.task_done()
             else:
                 pass
@@ -316,6 +320,7 @@ def main():
             stop_signal=stop_signal,
             videoprocessor=videoprocessor,
             video_file_queue=video_file_queue,
+            upload_to_aws=CONFIG.upload_to_aws,
             name="VideoProcessingThread",
             )
     )
