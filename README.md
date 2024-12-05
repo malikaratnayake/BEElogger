@@ -94,30 +94,34 @@ Follow these steps to install and set up the BEElogger software.
     ```bash
     source BEElogger-env/bin/activate
     ```
-7. Install the dependencies associated with [Adafruit Sensors](https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi) and restart when prompted:
+7. Install `wheel` package.
+   ```bash
+   pip install wheel
+   ```
+8. Install the dependencies associated with [Adafruit Sensors](https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi) and restart when prompted:
     ```bash
     cd ~
     pip3 install --upgrade adafruit-python-shell
     wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/raspi-blinka.py
     sudo -E env PATH=$PATH python3 raspi-blinka.py
     ```
-8. Activate the virtual environment again:
+9. Activate the virtual environment again:
     ```bash
     source BEElogger-env/bin/activate
     ```
-9. Clone the BEElogger repository:
+10. Clone the BEElogger repository:
     ```bash
     git clone https://github.com/malikaratnayake/BEElogger.git
     ```
-10. Install the EcoMotionZip software:
+11. Install the EcoMotionZip software:
     ```bash
     git clone https://github.com/malikaratnayake/EcoMotionZip.git
     ```
-11. Navigate to the BEElogger directory:
+12. Navigate to the BEElogger directory:
     ```bash
     cd BEElogger
     ```
-12. Install the required dependencies:
+13. Install the required dependencies:
     ```bash
     pip install -r requirements.txt
     ```
